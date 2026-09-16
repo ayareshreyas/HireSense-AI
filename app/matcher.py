@@ -39,6 +39,18 @@ def calculate_skill_score(matched_skills, job_skills):
     return round(score, 2)
 
 
+def calculate_overall_score(skill_score, semantic_score):
+    skill_weight = 0.70
+    semantic_weight = 0.30
+
+    overall_score = (
+        skill_score * skill_weight
+        + semantic_score * semantic_weight
+    )
+
+    return round(overall_score, 2)
+
+
 def build_analysis(
     resume_skills,
     job_skills,
@@ -46,7 +58,8 @@ def build_analysis(
     missing_skills,
     skill_evidence,
     skill_score,
-    semantic_score
+    semantic_score,
+    overall_score
 ):
     return {
         "resume_skills": resume_skills,
@@ -55,5 +68,6 @@ def build_analysis(
         "missing_skills": missing_skills,
         "skill_evidence": skill_evidence,
         "skill_coverage": skill_score,
-        "semantic_similarity": semantic_score
+        "semantic_similarity": semantic_score,
+        "overall_match_score": overall_score
     }

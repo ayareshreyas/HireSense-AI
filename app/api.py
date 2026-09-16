@@ -1,11 +1,12 @@
 import os
 import tempfile
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, Form, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.matcher import (
     build_analysis,
+    calculate_overall_score,
     calculate_skill_score,
     find_skill_evidence,
     match_skills,
@@ -94,10 +95,17 @@ async def analyze_resume(
                 detail="No readable text was found in the resume.",
             )
 
-        cleaned_job_description = clean_text(job_description)
+        cleaned_job_description = clean_text(
+            job_description
+        )
 
-        resume_skills = extract_skills(resume_text)
-        job_skills = extract_skills(cleaned_job_description)
+        resume_skills = extract_skills(
+            resume_text
+        )
+
+        job_skills = extract_skills(
+            cleaned_job_description
+        )
 
         matched_skills, missing_skills = match_skills(
             resume_skills,
@@ -155,6 +163,11 @@ async def analyze_resume(
             cleaned_job_description,
         )
 
+        overall_score = calculate_overall_score(
+            skill_score,
+            semantic_score,
+        )
+
         analysis = build_analysis(
             resume_skills,
             job_skills,
@@ -163,6 +176,7 @@ async def analyze_resume(
             skill_evidence,
             skill_score,
             semantic_score,
+            overall_score,
         )
 
         recommendations = generate_recommendations(

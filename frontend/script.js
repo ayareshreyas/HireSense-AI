@@ -5,13 +5,27 @@ const resumeInput = document.getElementById("resume");
 const jobDescriptionInput = document.getElementById("job-description");
 
 const resultsSection = document.getElementById("results");
-const skillCoverageElement = document.getElementById("skill-coverage");
+
+const overallMatchScoreElement = document.getElementById(
+    "overall-match-score"
+);
+
+const skillCoverageElement = document.getElementById(
+    "skill-coverage"
+);
+
 const semanticSimilarityElement = document.getElementById(
     "semantic-similarity"
 );
 
-const matchedSkillsList = document.getElementById("matched-skills");
-const missingSkillsList = document.getElementById("missing-skills");
+const matchedSkillsList = document.getElementById(
+    "matched-skills"
+);
+
+const missingSkillsList = document.getElementById(
+    "missing-skills"
+);
+
 const recommendationsList = document.getElementById(
     "recommendations-list"
 );
@@ -42,7 +56,10 @@ analyzeButton.addEventListener("click", async () => {
     const formData = new FormData();
 
     formData.append("resume", resumeFile);
-    formData.append("job_description", jobDescription);
+    formData.append(
+        "job_description",
+        jobDescription
+    );
 
     setLoadingState(true);
 
@@ -62,12 +79,18 @@ analyzeButton.addEventListener("click", async () => {
             throw new Error(message);
         }
 
-        console.log("HireSense API response:", data);
+        console.log(
+            "HireSense API response:",
+            data
+        );
 
         displayResults(data);
 
     } catch (error) {
-        console.error("HireSense error:", error);
+        console.error(
+            "HireSense error:",
+            error
+        );
 
         alert(
             `Analysis failed: ${error.message}`
@@ -83,6 +106,12 @@ function displayResults(data) {
     if (!resultsSection) {
         throw new Error(
             'HTML element with id="results" was not found.'
+        );
+    }
+
+    if (!overallMatchScoreElement) {
+        throw new Error(
+            'HTML element with id="overall-match-score" was not found.'
         );
     }
 
@@ -117,11 +146,20 @@ function displayResults(data) {
     }
 
 
+    overallMatchScoreElement.textContent =
+        formatPercentage(
+            data.overall_match_score
+        );
+
     skillCoverageElement.textContent =
-        formatPercentage(data.skill_coverage);
+        formatPercentage(
+            data.skill_coverage
+        );
 
     semanticSimilarityElement.textContent =
-        formatPercentage(data.semantic_similarity);
+        formatPercentage(
+            data.semantic_similarity
+        );
 
 
     renderList(
@@ -151,11 +189,19 @@ function displayResults(data) {
 }
 
 
-function renderList(element, items, formatter = null) {
+function renderList(
+    element,
+    items,
+    formatter = null
+) {
     element.innerHTML = "";
 
-    if (!Array.isArray(items) || items.length === 0) {
-        const listItem = document.createElement("li");
+    if (
+        !Array.isArray(items) ||
+        items.length === 0
+    ) {
+        const listItem =
+            document.createElement("li");
 
         listItem.textContent = "None";
 
@@ -165,7 +211,8 @@ function renderList(element, items, formatter = null) {
     }
 
     items.forEach((item) => {
-        const listItem = document.createElement("li");
+        const listItem =
+            document.createElement("li");
 
         listItem.textContent =
             formatter
@@ -214,10 +261,13 @@ function formatSkillName(skill) {
         git: "Git"
     };
 
-    const normalizedSkill = skill.toLowerCase();
+    const normalizedSkill =
+        skill.toLowerCase();
 
     if (specialNames[normalizedSkill]) {
-        return specialNames[normalizedSkill];
+        return specialNames[
+            normalizedSkill
+        ];
     }
 
     return skill
@@ -236,8 +286,10 @@ function setLoadingState(isLoading) {
     analyzeButton.disabled = isLoading;
 
     if (isLoading) {
-        analyzeButton.textContent = "Analyzing...";
+        analyzeButton.textContent =
+            "Analyzing...";
     } else {
-        analyzeButton.textContent = "Analyze Resume";
+        analyzeButton.textContent =
+            "Analyze Resume";
     }
 }
