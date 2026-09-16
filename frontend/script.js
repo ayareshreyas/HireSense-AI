@@ -1,10 +1,22 @@
 const API_URL = "http://127.0.0.1:8000/analyze";
 
-const analyzeButton = document.getElementById("analyze-button");
-const resumeInput = document.getElementById("resume");
-const jobDescriptionInput = document.getElementById("job-description");
 
-const resultsSection = document.getElementById("results");
+const analyzeButton = document.getElementById(
+    "analyze-button"
+);
+
+const resumeInput = document.getElementById(
+    "resume"
+);
+
+const jobDescriptionInput = document.getElementById(
+    "job-description"
+);
+
+
+const resultsSection = document.getElementById(
+    "results"
+);
 
 const overallMatchScoreElement = document.getElementById(
     "overall-match-score"
@@ -30,24 +42,46 @@ const skillEvidenceList = document.getElementById(
     "skill-evidence-list"
 );
 
+const requiredSkillsElement = document.getElementById(
+    "required-skills"
+);
+
+const preferredSkillsElement = document.getElementById(
+    "preferred-skills"
+);
+
+const experienceRequirementsList = document.getElementById(
+    "experience-requirements"
+);
+
+const educationRequirementsList = document.getElementById(
+    "education-requirements"
+);
+
 const recommendationsList = document.getElementById(
     "recommendations-list"
 );
 
 
 analyzeButton.addEventListener("click", async () => {
+
     const resumeFile = resumeInput.files[0];
-    const jobDescription = jobDescriptionInput.value.trim();
+
+    const jobDescription =
+        jobDescriptionInput.value.trim();
+
 
     if (!resumeFile) {
         alert("Please upload your resume.");
         return;
     }
 
+
     if (!jobDescription) {
         alert("Please paste a job description.");
         return;
     }
+
 
     if (
         resumeFile.type &&
@@ -57,25 +91,39 @@ analyzeButton.addEventListener("click", async () => {
         return;
     }
 
+
     const formData = new FormData();
 
-    formData.append("resume", resumeFile);
+    formData.append(
+        "resume",
+        resumeFile
+    );
+
     formData.append(
         "job_description",
         jobDescription
     );
 
+
     setLoadingState(true);
 
+
     try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            body: formData
-        });
+
+        const response = await fetch(
+            API_URL,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
 
         const data = await response.json();
 
+
         if (!response.ok) {
+
             const message =
                 data.detail ||
                 "Resume analysis failed.";
@@ -83,77 +131,39 @@ analyzeButton.addEventListener("click", async () => {
             throw new Error(message);
         }
 
+
         console.log(
             "HireSense API response:",
             data
         );
 
+
         displayResults(data);
 
+
     } catch (error) {
+
         console.error(
             "HireSense error:",
             error
         );
 
+
         alert(
             `Analysis failed: ${error.message}`
         );
 
+
     } finally {
+
         setLoadingState(false);
     }
 });
 
 
 function displayResults(data) {
-    if (!resultsSection) {
-        throw new Error(
-            'HTML element with id="results" was not found.'
-        );
-    }
 
-    if (!overallMatchScoreElement) {
-        throw new Error(
-            'HTML element with id="overall-match-score" was not found.'
-        );
-    }
-
-    if (!skillCoverageElement) {
-        throw new Error(
-            'HTML element with id="skill-coverage" was not found.'
-        );
-    }
-
-    if (!semanticSimilarityElement) {
-        throw new Error(
-            'HTML element with id="semantic-similarity" was not found.'
-        );
-    }
-
-    if (!matchedSkillsList) {
-        throw new Error(
-            'HTML element with id="matched-skills" was not found.'
-        );
-    }
-
-    if (!missingSkillsList) {
-        throw new Error(
-            'HTML element with id="missing-skills" was not found.'
-        );
-    }
-
-    if (!skillEvidenceList) {
-        throw new Error(
-            'HTML element with id="skill-evidence-list" was not found.'
-        );
-    }
-
-    if (!recommendationsList) {
-        throw new Error(
-            'HTML element with id="recommendations-list" was not found.'
-        );
-    }
+    validateRequiredElements();
 
 
     overallMatchScoreElement.textContent =
@@ -161,10 +171,12 @@ function displayResults(data) {
             data.overall_match_score
         );
 
+
     skillCoverageElement.textContent =
         formatPercentage(
             data.skill_coverage
         );
+
 
     semanticSimilarityElement.textContent =
         formatPercentage(
@@ -178,15 +190,23 @@ function displayResults(data) {
         formatSkillName
     );
 
+
     renderList(
         missingSkillsList,
         data.missing_skills,
         formatSkillName
     );
 
+
     renderSkillEvidence(
         data.skill_evidence
     );
+
+
+    renderJobRequirements(
+        data.job_requirements
+    );
+
 
     renderList(
         recommendationsList,
@@ -196,6 +216,7 @@ function displayResults(data) {
 
     resultsSection.hidden = false;
 
+
     resultsSection.scrollIntoView({
         behavior: "smooth",
         block: "start"
@@ -203,14 +224,81 @@ function displayResults(data) {
 }
 
 
+function validateRequiredElements() {
+
+    const requiredElements = [
+        ["results", resultsSection],
+        [
+            "overall-match-score",
+            overallMatchScoreElement
+        ],
+        [
+            "skill-coverage",
+            skillCoverageElement
+        ],
+        [
+            "semantic-similarity",
+            semanticSimilarityElement
+        ],
+        [
+            "matched-skills",
+            matchedSkillsList
+        ],
+        [
+            "missing-skills",
+            missingSkillsList
+        ],
+        [
+            "skill-evidence-list",
+            skillEvidenceList
+        ],
+        [
+            "required-skills",
+            requiredSkillsElement
+        ],
+        [
+            "preferred-skills",
+            preferredSkillsElement
+        ],
+        [
+            "experience-requirements",
+            experienceRequirementsList
+        ],
+        [
+            "education-requirements",
+            educationRequirementsList
+        ],
+        [
+            "recommendations-list",
+            recommendationsList
+        ]
+    ];
+
+
+    requiredElements.forEach(
+        ([id, element]) => {
+
+            if (!element) {
+                throw new Error(
+                    `HTML element with id="${id}" was not found.`
+                );
+            }
+        }
+    );
+}
+
+
 function renderSkillEvidence(skillEvidence) {
+
     skillEvidenceList.innerHTML = "";
+
 
     if (
         !skillEvidence ||
         typeof skillEvidence !== "object" ||
         Object.keys(skillEvidence).length === 0
     ) {
+
         const message =
             document.createElement("p");
 
@@ -224,13 +312,15 @@ function renderSkillEvidence(skillEvidence) {
         return;
     }
 
+
     Object.entries(skillEvidence).forEach(
         ([skill, sections]) => {
 
             const card =
                 document.createElement("div");
 
-            card.className = "evidence-card";
+            card.className =
+                "evidence-card";
 
 
             const skillTitle =
@@ -239,7 +329,9 @@ function renderSkillEvidence(skillEvidence) {
             skillTitle.textContent =
                 formatSkillName(skill);
 
-            card.appendChild(skillTitle);
+            card.appendChild(
+                skillTitle
+            );
 
 
             const tagsContainer =
@@ -253,10 +345,13 @@ function renderSkillEvidence(skillEvidence) {
                 Array.isArray(sections) &&
                 sections.length > 0
             ) {
+
                 sections.forEach((section) => {
 
                     const tag =
-                        document.createElement("span");
+                        document.createElement(
+                            "span"
+                        );
 
                     tag.className =
                         "evidence-tag";
@@ -270,8 +365,11 @@ function renderSkillEvidence(skillEvidence) {
                 });
 
             } else {
+
                 const tag =
-                    document.createElement("span");
+                    document.createElement(
+                        "span"
+                    );
 
                 tag.className =
                     "evidence-tag";
@@ -289,6 +387,7 @@ function renderSkillEvidence(skillEvidence) {
                 tagsContainer
             );
 
+
             skillEvidenceList.appendChild(
                 card
             );
@@ -297,93 +396,226 @@ function renderSkillEvidence(skillEvidence) {
 }
 
 
+function renderJobRequirements(
+    jobRequirements
+) {
+
+    const requirements =
+        jobRequirements || {};
+
+
+    renderRequirementTags(
+        requiredSkillsElement,
+        requirements.required_skills
+    );
+
+
+    renderRequirementTags(
+        preferredSkillsElement,
+        requirements.preferred_skills
+    );
+
+
+    renderList(
+        experienceRequirementsList,
+        requirements.experience_requirements,
+        formatRequirementText
+    );
+
+
+    renderList(
+        educationRequirementsList,
+        requirements.education_requirements,
+        formatRequirementText
+    );
+}
+
+
+function renderRequirementTags(
+    element,
+    skills
+) {
+
+    element.innerHTML = "";
+
+
+    if (
+        !Array.isArray(skills) ||
+        skills.length === 0
+    ) {
+
+        const tag =
+            document.createElement("span");
+
+        tag.className =
+            "requirement-tag empty-tag";
+
+        tag.textContent =
+            "None detected";
+
+        element.appendChild(
+            tag
+        );
+
+        return;
+    }
+
+
+    skills.forEach((skill) => {
+
+        const tag =
+            document.createElement("span");
+
+        tag.className =
+            "requirement-tag";
+
+        tag.textContent =
+            formatSkillName(skill);
+
+        element.appendChild(
+            tag
+        );
+    });
+}
+
+
 function renderList(
     element,
     items,
     formatter = null
 ) {
+
     element.innerHTML = "";
+
 
     if (
         !Array.isArray(items) ||
         items.length === 0
     ) {
+
         const listItem =
             document.createElement("li");
 
-        listItem.textContent = "None";
+        listItem.textContent =
+            "None detected";
 
-        element.appendChild(listItem);
+        element.appendChild(
+            listItem
+        );
 
         return;
     }
 
+
     items.forEach((item) => {
+
         const listItem =
             document.createElement("li");
+
 
         listItem.textContent =
             formatter
                 ? formatter(item)
                 : item;
 
-        element.appendChild(listItem);
+
+        element.appendChild(
+            listItem
+        );
     });
 }
 
 
 function formatPercentage(value) {
-    const number = Number(value);
+
+    const number =
+        Number(value);
+
 
     if (Number.isNaN(number)) {
         return "N/A";
     }
+
 
     return `${number}%`;
 }
 
 
 function formatSkillName(skill) {
+
     if (typeof skill !== "string") {
         return String(skill);
     }
 
+
     const specialNames = {
+
         aws: "AWS",
+        gcp: "GCP",
         sql: "SQL",
         html: "HTML",
         css: "CSS",
         nlp: "NLP",
         ai: "AI",
         ml: "ML",
+
         javascript: "JavaScript",
+
         fastapi: "FastAPI",
+
         github: "GitHub",
+
         tensorflow: "TensorFlow",
+
+        pytorch: "PyTorch",
+
         numpy: "NumPy",
+
         pandas: "Pandas",
+
         matplotlib: "Matplotlib",
+
         docker: "Docker",
+
+        kubernetes: "Kubernetes",
+
         python: "Python",
+
         java: "Java",
+
         git: "Git",
-        "machine learning": "Machine Learning",
-        "artificial intelligence": "Artificial Intelligence",
-        "generative ai": "Generative AI"
+
+        "node.js": "Node.js",
+
+        "scikit-learn": "Scikit-learn",
+
+        "machine learning":
+            "Machine Learning",
+
+        "artificial intelligence":
+            "Artificial Intelligence",
+
+        "generative ai":
+            "Generative AI"
     };
+
 
     const normalizedSkill =
         skill.toLowerCase();
 
+
     if (specialNames[normalizedSkill]) {
+
         return specialNames[
             normalizedSkill
         ];
     }
 
+
     return skill
         .split(" ")
         .map((word) => {
+
             return (
                 word.charAt(0).toUpperCase() +
                 word.slice(1)
@@ -393,13 +625,38 @@ function formatSkillName(skill) {
 }
 
 
+function formatRequirementText(text) {
+
+    if (typeof text !== "string") {
+        return String(text);
+    }
+
+
+    if (!text.length) {
+        return text;
+    }
+
+
+    return (
+        text.charAt(0).toUpperCase() +
+        text.slice(1)
+    );
+}
+
+
 function setLoadingState(isLoading) {
-    analyzeButton.disabled = isLoading;
+
+    analyzeButton.disabled =
+        isLoading;
+
 
     if (isLoading) {
+
         analyzeButton.textContent =
             "Analyzing...";
+
     } else {
+
         analyzeButton.textContent =
             "Analyze Resume";
     }
