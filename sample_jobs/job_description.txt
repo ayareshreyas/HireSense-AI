@@ -1,0 +1,17 @@
+Junior Machine Learning Engineer
+
+We are looking for a Junior Machine Learning Engineer to join our AI team.
+
+Required Skills:
+- Python
+- ML
+- TensorFlow
+- FastAPI
+- Git
+- Docker
+- Amazon Web Services
+
+The candidate should have a good understanding of machine learning concepts
+and experience developing Python applications.
+
+Knowledge of REST APIs, cloud deployment, and version control is preferred.
