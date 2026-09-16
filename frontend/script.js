@@ -26,6 +26,10 @@ const missingSkillsList = document.getElementById(
     "missing-skills"
 );
 
+const skillEvidenceList = document.getElementById(
+    "skill-evidence-list"
+);
+
 const recommendationsList = document.getElementById(
     "recommendations-list"
 );
@@ -139,6 +143,12 @@ function displayResults(data) {
         );
     }
 
+    if (!skillEvidenceList) {
+        throw new Error(
+            'HTML element with id="skill-evidence-list" was not found.'
+        );
+    }
+
     if (!recommendationsList) {
         throw new Error(
             'HTML element with id="recommendations-list" was not found.'
@@ -174,6 +184,10 @@ function displayResults(data) {
         formatSkillName
     );
 
+    renderSkillEvidence(
+        data.skill_evidence
+    );
+
     renderList(
         recommendationsList,
         data.recommendations
@@ -186,6 +200,100 @@ function displayResults(data) {
         behavior: "smooth",
         block: "start"
     });
+}
+
+
+function renderSkillEvidence(skillEvidence) {
+    skillEvidenceList.innerHTML = "";
+
+    if (
+        !skillEvidence ||
+        typeof skillEvidence !== "object" ||
+        Object.keys(skillEvidence).length === 0
+    ) {
+        const message =
+            document.createElement("p");
+
+        message.textContent =
+            "No skill evidence was detected.";
+
+        skillEvidenceList.appendChild(
+            message
+        );
+
+        return;
+    }
+
+    Object.entries(skillEvidence).forEach(
+        ([skill, sections]) => {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "evidence-card";
+
+
+            const skillTitle =
+                document.createElement("h4");
+
+            skillTitle.textContent =
+                formatSkillName(skill);
+
+            card.appendChild(skillTitle);
+
+
+            const tagsContainer =
+                document.createElement("div");
+
+            tagsContainer.className =
+                "evidence-tags";
+
+
+            if (
+                Array.isArray(sections) &&
+                sections.length > 0
+            ) {
+                sections.forEach((section) => {
+
+                    const tag =
+                        document.createElement("span");
+
+                    tag.className =
+                        "evidence-tag";
+
+                    tag.textContent =
+                        section;
+
+                    tagsContainer.appendChild(
+                        tag
+                    );
+                });
+
+            } else {
+                const tag =
+                    document.createElement("span");
+
+                tag.className =
+                    "evidence-tag";
+
+                tag.textContent =
+                    "No section evidence";
+
+                tagsContainer.appendChild(
+                    tag
+                );
+            }
+
+
+            card.appendChild(
+                tagsContainer
+            );
+
+            skillEvidenceList.appendChild(
+                card
+            );
+        }
+    );
 }
 
 
@@ -258,7 +366,10 @@ function formatSkillName(skill) {
         docker: "Docker",
         python: "Python",
         java: "Java",
-        git: "Git"
+        git: "Git",
+        "machine learning": "Machine Learning",
+        "artificial intelligence": "Artificial Intelligence",
+        "generative ai": "Generative AI"
     };
 
     const normalizedSkill =
