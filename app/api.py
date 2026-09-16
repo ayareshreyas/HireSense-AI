@@ -2,6 +2,7 @@ import os
 import tempfile
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.matcher import (
     build_analysis,
@@ -9,7 +10,11 @@ from app.matcher import (
     find_skill_evidence,
     match_skills,
 )
-from app.parser import clean_text, extract_section, extract_text_from_pdf
+from app.parser import (
+    clean_text,
+    extract_section,
+    extract_text_from_pdf,
+)
 from app.recommendations import generate_recommendations
 from app.semantic import calculate_semantic_similarity
 from app.skills import extract_skills
@@ -22,10 +27,19 @@ app = FastAPI(
 )
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 @app.get("/")
 def root():
     return {
-        "message": "HireSense AI API is running"
+        "message": "HireSense AI API is running."
     }
 
 
@@ -39,48 +53,57 @@ def health_check():
 @app.post("/analyze")
 async def analyze_resume(
     resume: UploadFile = File(...),
-    job_description: str = Form(...)
+    job_description: str = Form(...),
 ):
     if not resume.filename:
         raise HTTPException(
             status_code=400,
-            detail="No resume file provided."
+            detail="Resume file is required.",
         )
 
     if not resume.filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=400,
-            detail="Only PDF resumes are currently supported."
+            detail="Only PDF resumes are supported.",
         )
 
     if not job_description.strip():
         raise HTTPException(
             status_code=400,
-            detail="Job description cannot be empty."
+            detail="Job description cannot be empty.",
         )
 
     temp_path = None
 
     try:
-        # Save uploaded PDF temporarily
+        file_content = await resume.read()
+
         with tempfile.NamedTemporaryFile(
             delete=False,
-            suffix=".pdf"
+            suffix=".pdf",
         ) as temp_file:
-            temp_file.write(await resume.read())
+            temp_file.write(file_content)
             temp_path = temp_file.name
 
-        # Extract and clean resume text
         resume_text = extract_text_from_pdf(temp_path)
         resume_text = clean_text(resume_text)
 
         if not resume_text:
             raise HTTPException(
                 status_code=400,
-                detail="Could not extract text from the resume."
+                detail="No readable text was found in the resume.",
             )
 
-        # Extract important resume sections
+        cleaned_job_description = clean_text(job_description)
+
+        resume_skills = extract_skills(resume_text)
+        job_skills = extract_skills(cleaned_job_description)
+
+        matched_skills, missing_skills = match_skills(
+            resume_skills,
+            job_skills,
+        )
+
         professional_summary = extract_section(
             resume_text,
             "PROFESSIONAL SUMMARY",
@@ -117,42 +140,21 @@ async def analyze_resume(
             "Projects": projects,
         }
 
-        # Extract skills
-        resume_skills = extract_skills(resume_text)
-        job_skills = extract_skills(job_description)
-
-        # Match resume skills against job requirements
-        matched_skills, missing_skills = match_skills(
-            resume_skills,
-            job_skills,
-        )
-
-        # Find evidence for matched skills
         skill_evidence = find_skill_evidence(
             matched_skills,
             resume_sections,
         )
 
-        # Calculate skill coverage
         skill_score = calculate_skill_score(
             matched_skills,
             job_skills,
         )
 
-        # Calculate semantic similarity
         semantic_score = calculate_semantic_similarity(
             resume_text,
-            job_description,
+            cleaned_job_description,
         )
 
-        # Generate evidence-based recommendations
-        recommendations = generate_recommendations(
-            missing_skills,
-            matched_skills,
-            skill_evidence,
-        )
-
-        # Build structured analysis
         analysis = build_analysis(
             resume_skills,
             job_skills,
@@ -163,10 +165,24 @@ async def analyze_resume(
             semantic_score,
         )
 
-        # Add recommendations to final response
+        recommendations = generate_recommendations(
+            missing_skills,
+            matched_skills,
+            skill_evidence,
+        )
+
         analysis["recommendations"] = recommendations
 
         return analysis
+
+    except HTTPException:
+        raise
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Resume analysis failed: {str(error)}",
+        )
 
     finally:
         if temp_path and os.path.exists(temp_path):

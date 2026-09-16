@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HireSense AI</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <h1>HireSense AI</h1>
+
+            <p>
+                AI-Powered Resume & Job Matching
+            </p>
+        </div>
+    </header>
+
+
+    <main class="container">
+
+        <section class="hero">
+
+            <h2>
+                See how well your resume fits the role
+            </h2>
+
+            <p>
+                Upload your resume and paste a job description
+                to discover matched skills, missing skills,
+                and personalized recommendations.
+            </p>
+
+        </section>
+
+
+        <section class="analyzer">
+
+            <div class="resume-upload">
+
+                <h3>Upload Resume</h3>
+
+                <p>
+                    Upload your resume in PDF format.
+                </p>
+
+                <input
+                    type="file"
+                    id="resume"
+                    accept=".pdf"
+                >
+
+            </div>
+
+
+            <div class="job-input">
+
+                <h3>Job Description</h3>
+
+                <p>
+                    Paste the complete job description below.
+                </p>
+
+                <textarea
+                    id="job-description"
+                    rows="12"
+                    placeholder="Paste the job description here..."
+                ></textarea>
+
+            </div>
+
+        </section>
+
+
+        <button
+            id="analyze-button"
+            type="button"
+        >
+            Analyze Resume
+        </button>
+
+
+        <section
+            id="results"
+            class="results"
+            hidden
+        >
+
+            <h2>Your Match Analysis</h2>
+
+
+            <div class="scores">
+
+                <div class="score-card">
+
+                    <h3>Skill Coverage</h3>
+
+                    <p id="skill-coverage">
+                        0%
+                    </p>
+
+                </div>
+
+
+                <div class="score-card">
+
+                    <h3>Semantic Relevance</h3>
+
+                    <p id="semantic-similarity">
+                        0%
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="skills-results">
+
+                <div>
+
+                    <h3>Matched Skills</h3>
+
+                    <ul id="matched-skills"></ul>
+
+                </div>
+
+
+                <div>
+
+                    <h3>Missing Skills</h3>
+
+                    <ul id="missing-skills"></ul>
+
+                </div>
+
+            </div>
+
+
+            <div class="recommendations">
+
+                <h3>Recommendations</h3>
+
+                <ol id="recommendations-list"></ol>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

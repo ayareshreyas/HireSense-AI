@@ -1,0 +1,256 @@
+/* ---------- Global ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f7f8fc;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+.container {
+    width: min(1100px, 90%);
+    margin: 0 auto;
+}
+
+
+/* ---------- Header ---------- */
+
+header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 22px 0;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #111827;
+}
+
+header p {
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+
+/* ---------- Hero ---------- */
+
+.hero {
+    text-align: center;
+    padding: 65px 20px 45px;
+}
+
+.hero h2 {
+    font-size: 38px;
+    line-height: 1.2;
+    color: #111827;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: 0 auto;
+    color: #6b7280;
+    font-size: 17px;
+}
+
+
+/* ---------- Analyzer ---------- */
+
+.analyzer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.resume-upload,
+.job-input {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.resume-upload h3,
+.job-input h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #111827;
+}
+
+.resume-upload p,
+.job-input p {
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+
+/* ---------- File Input ---------- */
+
+input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    background: #f9fafb;
+    cursor: pointer;
+}
+
+
+/* ---------- Job Description ---------- */
+
+textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 220px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+}
+
+textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+
+/* ---------- Analyze Button ---------- */
+
+#analyze-button {
+    display: block;
+    width: 220px;
+    margin: 10px auto 55px;
+    padding: 14px 24px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #4f46e5;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#analyze-button:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+
+/* ---------- Results ---------- */
+
+.results {
+    margin-bottom: 70px;
+}
+
+.results > h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+
+/* ---------- Scores ---------- */
+
+.scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.score-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.score-card h3 {
+    color: #6b7280;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.score-card p {
+    font-size: 38px;
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+
+/* ---------- Skill Results ---------- */
+
+.skills-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.skills-results > div,
+.recommendations {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.skills-results h3,
+.recommendations h3 {
+    margin-bottom: 18px;
+}
+
+
+/* ---------- Recommendations ---------- */
+
+.recommendations ol {
+    padding-left: 22px;
+}
+
+.recommendations li {
+    margin-bottom: 10px;
+    color: #4b5563;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 768px) {
+
+    .analyzer,
+    .scores,
+    .skills-results {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding-top: 45px;
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+
+    #analyze-button {
+        width: 100%;
+    }
+}
