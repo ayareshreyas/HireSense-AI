@@ -10,6 +10,7 @@ from app.matcher import (
     match_skills,
 )
 from app.parser import clean_text, extract_section, extract_text_from_pdf
+from app.recommendations import generate_recommendations
 from app.semantic import calculate_semantic_similarity
 from app.skills import extract_skills
 
@@ -126,7 +127,7 @@ async def analyze_resume(
             job_skills,
         )
 
-        # Find where matched skills appear in the resume
+        # Find evidence for matched skills
         skill_evidence = find_skill_evidence(
             matched_skills,
             resume_sections,
@@ -144,7 +145,14 @@ async def analyze_resume(
             job_description,
         )
 
-        # Build final result
+        # Generate evidence-based recommendations
+        recommendations = generate_recommendations(
+            missing_skills,
+            matched_skills,
+            skill_evidence,
+        )
+
+        # Build structured analysis
         analysis = build_analysis(
             resume_skills,
             job_skills,
@@ -154,6 +162,9 @@ async def analyze_resume(
             skill_score,
             semantic_score,
         )
+
+        # Add recommendations to final response
+        analysis["recommendations"] = recommendations
 
         return analysis
 
