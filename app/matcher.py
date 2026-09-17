@@ -28,18 +28,79 @@ def find_skill_evidence(matched_skills, resume_sections):
 
 
 def calculate_skill_score(matched_skills, job_skills):
+    """
+    Calculate basic unweighted skill coverage.
+    """
+
     if len(job_skills) == 0:
         return 0
 
     score = (
-        len(matched_skills) /
-        len(job_skills)
+        len(matched_skills)
+        / len(job_skills)
     ) * 100
 
     return round(score, 2)
 
 
+def calculate_weighted_skill_score(
+    resume_skills,
+    required_skills,
+    preferred_skills,
+    unspecified_skills,
+):
+    """
+    Calculate skill coverage while considering
+    the importance of each job requirement.
+
+    Required skill    = 3 points
+    Unspecified skill = 2 points
+    Preferred skill   = 1 point
+    """
+
+    required_weight = 3
+    unspecified_weight = 2
+    preferred_weight = 1
+
+    total_possible_score = (
+        len(required_skills) * required_weight
+        + len(unspecified_skills) * unspecified_weight
+        + len(preferred_skills) * preferred_weight
+    )
+
+    if total_possible_score == 0:
+        return 0
+
+    earned_score = 0
+
+    for skill in required_skills:
+        if skill in resume_skills:
+            earned_score += required_weight
+
+    for skill in unspecified_skills:
+        if skill in resume_skills:
+            earned_score += unspecified_weight
+
+    for skill in preferred_skills:
+        if skill in resume_skills:
+            earned_score += preferred_weight
+
+    weighted_score = (
+        earned_score
+        / total_possible_score
+    ) * 100
+
+    return round(weighted_score, 2)
+
+
 def calculate_overall_score(skill_score, semantic_score):
+    """
+    Combine weighted skill coverage and semantic similarity.
+
+    Skill coverage       = 70%
+    Semantic similarity  = 30%
+    """
+
     skill_weight = 0.70
     semantic_weight = 0.30
 
@@ -59,7 +120,7 @@ def build_analysis(
     skill_evidence,
     skill_score,
     semantic_score,
-    overall_score
+    overall_score,
 ):
     return {
         "resume_skills": resume_skills,
@@ -69,5 +130,5 @@ def build_analysis(
         "skill_evidence": skill_evidence,
         "skill_coverage": skill_score,
         "semantic_similarity": semantic_score,
-        "overall_match_score": overall_score
+        "overall_match_score": overall_score,
     }

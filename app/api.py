@@ -1,13 +1,13 @@
 import os
 import tempfile
 
-from fastapi import FastAPI, Form, HTTPException, UploadFile, File
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.matcher import (
     build_analysis,
     calculate_overall_score,
-    calculate_skill_score,
+    calculate_weighted_skill_score,
     find_skill_evidence,
     match_skills,
 )
@@ -17,8 +17,8 @@ from app.parser import (
     extract_text_from_pdf,
 )
 from app.recommendations import generate_recommendations
+from app.requirements import analyze_job_requirements
 from app.semantic import calculate_semantic_similarity
-from app.skills import extract_skills
 
 
 app = FastAPI(
@@ -86,8 +86,13 @@ async def analyze_resume(
             temp_file.write(file_content)
             temp_path = temp_file.name
 
-        resume_text = extract_text_from_pdf(temp_path)
-        resume_text = clean_text(resume_text)
+        resume_text = extract_text_from_pdf(
+            temp_path
+        )
+
+        resume_text = clean_text(
+            resume_text
+        )
 
         if not resume_text:
             raise HTTPException(
@@ -99,13 +104,31 @@ async def analyze_resume(
             job_description
         )
 
+        from app.skills import extract_skills
+
         resume_skills = extract_skills(
             resume_text
         )
 
-        job_skills = extract_skills(
+        job_requirements = analyze_job_requirements(
             cleaned_job_description
         )
+
+        job_skills = job_requirements[
+            "all_skills"
+        ]
+
+        required_skills = job_requirements[
+            "required_skills"
+        ]
+
+        preferred_skills = job_requirements[
+            "preferred_skills"
+        ]
+
+        unspecified_skills = job_requirements[
+            "unspecified_skills"
+        ]
 
         matched_skills, missing_skills = match_skills(
             resume_skills,
@@ -143,9 +166,14 @@ async def analyze_resume(
         )
 
         resume_sections = {
-            "Professional Summary": professional_summary,
-            "Technical Skills": technical_skills,
-            "Projects": projects,
+            "Professional Summary":
+                professional_summary,
+
+            "Technical Skills":
+                technical_skills,
+
+            "Projects":
+                projects,
         }
 
         skill_evidence = find_skill_evidence(
@@ -153,9 +181,11 @@ async def analyze_resume(
             resume_sections,
         )
 
-        skill_score = calculate_skill_score(
-            matched_skills,
-            job_skills,
+        skill_score = calculate_weighted_skill_score(
+            resume_skills,
+            required_skills,
+            preferred_skills,
+            unspecified_skills,
         )
 
         semantic_score = calculate_semantic_similarity(
@@ -185,7 +215,30 @@ async def analyze_resume(
             skill_evidence,
         )
 
-        analysis["recommendations"] = recommendations
+        analysis["job_requirements"] = {
+            "required_skills":
+                required_skills,
+
+            "preferred_skills":
+                preferred_skills,
+
+            "unspecified_skills":
+                unspecified_skills,
+
+            "experience_requirements":
+                job_requirements[
+                    "experience_requirements"
+                ],
+
+            "education_requirements":
+                job_requirements[
+                    "education_requirements"
+                ],
+        }
+
+        analysis["recommendations"] = (
+            recommendations
+        )
 
         return analysis
 
@@ -195,9 +248,15 @@ async def analyze_resume(
     except Exception as error:
         raise HTTPException(
             status_code=500,
-            detail=f"Resume analysis failed: {str(error)}",
+            detail=(
+                "Resume analysis failed: "
+                f"{str(error)}"
+            ),
         )
 
     finally:
-        if temp_path and os.path.exists(temp_path):
+        if (
+            temp_path
+            and os.path.exists(temp_path)
+        ):
             os.remove(temp_path)
