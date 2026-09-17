@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/analyze";
+const API_URL = "https://hiresense-ai-qh6x.onrender.com/analyze";
 
 
 const analyzeButton = document.getElementById(
@@ -671,11 +671,7 @@ function formatSkillName(skill) {
 
         git: "Git",
 
-        aws: "AWS",
-
         azure: "Azure",
-
-        gcp: "GCP",
 
         "node.js": "Node.js",
 
