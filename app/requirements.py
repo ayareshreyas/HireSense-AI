@@ -17,7 +17,23 @@ REQUIRED_PATTERNS = [
     r"\bproficient\b",
     r"\bexperience with\b",
     r"\bexperience in\b",
+
+    # Common real-world requirement wording
+    r"\bwhat we(?:'re| are) looking for\b",
+    r"\bwhat you(?:'ll| will) need\b",
+    r"\bwhat you need\b",
+    r"\bwe(?:'re| are) looking for\b",
+    r"\bwe expect\b",
+    r"\byou should know\b",
+    r"\bhands-on\b",
+    r"\bhands on\b",
+    r"\bsolid understanding\b",
+    r"\bstrong understanding\b",
+    r"\bgood understanding\b",
+    r"\bfamiliarity with\b",
+    r"\bknowledge of\b",
 ]
+
 
 PREFERRED_PATTERNS = [
     r"\bpreferred\b",
@@ -27,6 +43,16 @@ PREFERRED_PATTERNS = [
     r"\bplus\b",
     r"\badvantage\b",
     r"\bdesirable\b",
+
+    # Common optional/preferred wording
+    r"\bvaluable\b",
+    r"\balso valuable\b",
+    r"\bhelpful\b",
+    r"\bbeneficial\b",
+    r"\bwould be useful\b",
+    r"\bwould be beneficial\b",
+    r"\bwould be a plus\b",
+    r"\bis a plus\b",
 ]
 
 
@@ -84,12 +110,20 @@ def classify_skill_requirement(skill, sentences):
         if skill in sentence_skills:
             relevant_sentences.append(sentence)
 
+    # Preferred wording takes priority when the same
+    # sentence contains general requirement language.
     for sentence in relevant_sentences:
-        if contains_pattern(sentence, PREFERRED_PATTERNS):
+        if contains_pattern(
+            sentence,
+            PREFERRED_PATTERNS
+        ):
             return "preferred"
 
     for sentence in relevant_sentences:
-        if contains_pattern(sentence, REQUIRED_PATTERNS):
+        if contains_pattern(
+            sentence,
+            REQUIRED_PATTERNS
+        ):
             return "required"
 
     return "unspecified"
@@ -112,7 +146,11 @@ def extract_experience_requirements(text):
     matches = []
 
     for pattern in patterns:
-        for match in re.finditer(pattern, text, re.IGNORECASE):
+        for match in re.finditer(
+            pattern,
+            text,
+            re.IGNORECASE
+        ):
             start = match.start()
             end = match.end()
 
@@ -122,14 +160,25 @@ def extract_experience_requirements(text):
                 existing_start = existing["start"]
                 existing_end = existing["end"]
 
-                if start < existing_end and end > existing_start:
+                if (
+                    start < existing_end
+                    and end > existing_start
+                ):
                     overlaps_existing = True
 
                     current_length = end - start
-                    existing_length = existing_end - existing_start
+                    existing_length = (
+                        existing_end
+                        - existing_start
+                    )
 
-                    if current_length > existing_length:
-                        existing["text"] = match.group(0).strip()
+                    if (
+                        current_length
+                        > existing_length
+                    ):
+                        existing["text"] = (
+                            match.group(0).strip()
+                        )
                         existing["start"] = start
                         existing["end"] = end
 
@@ -138,15 +187,21 @@ def extract_experience_requirements(text):
             if not overlaps_existing:
                 matches.append(
                     {
-                        "text": match.group(0).strip(),
+                        "text":
+                            match.group(0).strip(),
                         "start": start,
                         "end": end,
                     }
                 )
 
-    matches.sort(key=lambda item: item["start"])
+    matches.sort(
+        key=lambda item: item["start"]
+    )
 
-    return [item["text"] for item in matches]
+    return [
+        item["text"]
+        for item in matches
+    ]
 
 
 def extract_education_requirements(text):
@@ -180,7 +235,11 @@ def extract_education_requirements(text):
 
     found = []
 
-    for education, aliases in education_keywords.items():
+    for (
+        education,
+        aliases
+    ) in education_keywords.items():
+
         for alias in aliases:
             if alias in text_lower:
                 found.append(education)
@@ -189,22 +248,32 @@ def extract_education_requirements(text):
     return found
 
 
-def analyze_job_requirements(job_description):
+def analyze_job_requirements(
+    job_description
+):
     """
-    Analyze a job description and return structured requirements.
+    Analyze a job description and return
+    structured requirements.
     """
 
-    job_skills = extract_skills(job_description)
-    sentences = split_into_sentences(job_description)
+    job_skills = extract_skills(
+        job_description
+    )
+
+    sentences = split_into_sentences(
+        job_description
+    )
 
     required_skills = []
     preferred_skills = []
     unspecified_skills = []
 
     for skill in job_skills:
-        classification = classify_skill_requirement(
-            skill,
-            sentences
+        classification = (
+            classify_skill_requirement(
+                skill,
+                sentences
+            )
         )
 
         if classification == "required":
@@ -217,12 +286,25 @@ def analyze_job_requirements(job_description):
             unspecified_skills.append(skill)
 
     return {
-        "all_skills": job_skills,
-        "required_skills": required_skills,
-        "preferred_skills": preferred_skills,
-        "unspecified_skills": unspecified_skills,
+        "all_skills":
+            job_skills,
+
+        "required_skills":
+            required_skills,
+
+        "preferred_skills":
+            preferred_skills,
+
+        "unspecified_skills":
+            unspecified_skills,
+
         "experience_requirements":
-            extract_experience_requirements(job_description),
+            extract_experience_requirements(
+                job_description
+            ),
+
         "education_requirements":
-            extract_education_requirements(job_description),
+            extract_education_requirements(
+                job_description
+            ),
     }
