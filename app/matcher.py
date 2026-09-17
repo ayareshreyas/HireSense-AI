@@ -14,7 +14,10 @@ def match_skills(resume_skills, job_skills):
     return matched_skills, missing_skills
 
 
-def find_skill_evidence(matched_skills, resume_sections):
+def find_skill_evidence(
+    matched_skills,
+    resume_sections
+):
     evidence = {}
 
     for skill in matched_skills:
@@ -22,18 +25,26 @@ def find_skill_evidence(matched_skills, resume_sections):
 
         for section_name, section_text in resume_sections.items():
             if contains_skill(section_text, skill):
-                evidence[skill].append(section_name)
+                evidence[skill].append(
+                    section_name
+                )
 
     return evidence
 
 
-def calculate_skill_score(matched_skills, job_skills):
+def calculate_skill_score(
+    matched_skills,
+    job_skills
+):
     """
     Calculate basic unweighted skill coverage.
+
+    Returns None when the job description contains
+    no supported technical skills.
     """
 
     if len(job_skills) == 0:
-        return 0
+        return None
 
     score = (
         len(matched_skills)
@@ -56,6 +67,9 @@ def calculate_weighted_skill_score(
     Required skill    = 3 points
     Unspecified skill = 2 points
     Preferred skill   = 1 point
+
+    Returns None when no supported technical
+    skills were detected in the job description.
     """
 
     required_weight = 3
@@ -69,7 +83,7 @@ def calculate_weighted_skill_score(
     )
 
     if total_possible_score == 0:
-        return 0
+        return None
 
     earned_score = 0
 
@@ -93,13 +107,24 @@ def calculate_weighted_skill_score(
     return round(weighted_score, 2)
 
 
-def calculate_overall_score(skill_score, semantic_score):
+def calculate_overall_score(
+    skill_score,
+    semantic_score
+):
     """
-    Combine weighted skill coverage and semantic similarity.
+    Combine weighted skill coverage and
+    semantic similarity.
 
-    Skill coverage       = 70%
-    Semantic similarity  = 30%
+    When a valid skill score exists:
+        Skill coverage      = 70%
+        Semantic similarity = 30%
+
+    When no supported job skills were detected,
+    semantic similarity becomes the overall score.
     """
+
+    if skill_score is None:
+        return round(semantic_score, 2)
 
     skill_weight = 0.70
     semantic_weight = 0.30

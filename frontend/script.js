@@ -528,6 +528,15 @@ function renderList(
 
 function formatPercentage(value) {
 
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return "N/A";
+    }
+
+
     const number =
         Number(value);
 

@@ -46,6 +46,30 @@ def generate_recommendations(
         []
     )
 
+    unspecified_skills = job_requirements.get(
+        "unspecified_skills",
+        []
+    )
+
+    all_job_skills = (
+        required_skills
+        + preferred_skills
+        + unspecified_skills
+    )
+
+    # Handle job descriptions where no supported
+    # technical skills were detected.
+    if not all_job_skills:
+        recommendations.append(
+            "No supported technical skills were detected "
+            "in this job description, so skill coverage "
+            "could not be calculated. Review the job "
+            "description manually for requirements that "
+            "HireSense does not currently recognize."
+        )
+
+        return recommendations
+
     # 1. Prioritize missing required skills
     for skill in required_skills:
         if skill in missing_skills:
@@ -86,7 +110,10 @@ def generate_recommendations(
 
     # 4. Check whether matched skills have project evidence
     for skill in matched_skills:
-        sections = skill_evidence.get(skill, [])
+        sections = skill_evidence.get(
+            skill,
+            []
+        )
 
         if (
             "Technical Skills" in sections
@@ -100,12 +127,13 @@ def generate_recommendations(
                 f"Consider demonstrating it through relevant project work."
             )
 
-    # 5. Avoid returning an empty recommendation list
+    # 5. Handle strong skill coverage
     if not recommendations:
         recommendations.append(
-            "Your resume demonstrates strong coverage of the skills "
-            "identified in this job description. Focus on strengthening "
-            "your project evidence and quantifying your achievements."
+            "Your resume demonstrates strong coverage of the "
+            "technical skills identified in this job description. "
+            "Focus on strengthening your project evidence and "
+            "quantifying your achievements."
         )
 
     return recommendations
