@@ -105,12 +105,10 @@ async def analyze_resume(
             job_description
         )
 
-        # Extract skills from the resume
         resume_skills = extract_skills(
             resume_text
         )
 
-        # Analyze the job description
         job_requirements = analyze_job_requirements(
             cleaned_job_description
         )
@@ -131,13 +129,17 @@ async def analyze_resume(
             "unspecified_skills"
         ]
 
-        # Match resume skills against job skills
+        alternative_skill_groups = (
+            job_requirements[
+                "alternative_skill_groups"
+            ]
+        )
+
         matched_skills, missing_skills = match_skills(
             resume_skills,
             job_skills,
         )
 
-        # Extract important resume sections
         professional_summary = extract_section(
             resume_text,
             "PROFESSIONAL SUMMARY",
@@ -179,33 +181,29 @@ async def analyze_resume(
                 projects,
         }
 
-        # Find evidence for matched skills
         skill_evidence = find_skill_evidence(
             matched_skills,
             resume_sections,
         )
 
-        # Calculate requirement-aware weighted skill coverage
         skill_score = calculate_weighted_skill_score(
             resume_skills,
             required_skills,
             preferred_skills,
             unspecified_skills,
+            alternative_skill_groups,
         )
 
-        # Calculate semantic similarity
         semantic_score = calculate_semantic_similarity(
             resume_text,
             cleaned_job_description,
         )
 
-        # Calculate final overall match score
         overall_score = calculate_overall_score(
             skill_score,
             semantic_score,
         )
 
-        # Build base analysis
         analysis = build_analysis(
             resume_skills,
             job_skills,
@@ -217,7 +215,6 @@ async def analyze_resume(
             overall_score,
         )
 
-        # Add structured job requirements
         analysis["job_requirements"] = {
             "required_skills":
                 required_skills,
@@ -227,6 +224,9 @@ async def analyze_resume(
 
             "unspecified_skills":
                 unspecified_skills,
+
+            "alternative_skill_groups":
+                alternative_skill_groups,
 
             "experience_requirements":
                 job_requirements[
@@ -239,7 +239,6 @@ async def analyze_resume(
                 ],
         }
 
-        # Generate requirement-aware recommendations
         recommendations = generate_recommendations(
             missing_skills,
             matched_skills,

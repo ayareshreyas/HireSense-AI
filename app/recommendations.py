@@ -25,6 +25,35 @@ def format_skill_name(skill):
     )
 
 
+def format_skill_group(skills):
+    """
+    Convert alternative skills into readable text.
+
+    Examples:
+    TensorFlow or PyTorch
+    Docker or Kubernetes
+    """
+
+    formatted_skills = [
+        format_skill_name(skill)
+        for skill in skills
+    ]
+
+    if len(formatted_skills) == 1:
+        return formatted_skills[0]
+
+    if len(formatted_skills) == 2:
+        return (
+            f"{formatted_skills[0]} "
+            f"or {formatted_skills[1]}"
+        )
+
+    return (
+        ", ".join(formatted_skills[:-1])
+        + f", or {formatted_skills[-1]}"
+    )
+
+
 def generate_recommendations(
     missing_skills,
     matched_skills,
@@ -51,6 +80,11 @@ def generate_recommendations(
         []
     )
 
+    alternative_skill_groups = job_requirements.get(
+        "alternative_skill_groups",
+        []
+    )
+
     all_job_skills = (
         required_skills
         + preferred_skills
@@ -70,10 +104,89 @@ def generate_recommendations(
 
         return recommendations
 
-    # 1. Prioritize missing required skills
+    # Keep track of every skill that belongs to
+    # an alternative requirement group.
+    alternative_skills = set()
+
+    for group in alternative_skill_groups:
+        group_skills = group.get(
+            "skills",
+            []
+        )
+
+        alternative_skills.update(
+            group_skills
+        )
+
+    # 1. Handle alternative skill groups.
+    #
+    # Example:
+    # TensorFlow OR PyTorch
+    #
+    # If TensorFlow is matched, the group is satisfied.
+    # PyTorch should therefore NOT be recommended.
+    #
+    # If neither is matched, recommend the group once.
+    for group in alternative_skill_groups:
+        group_skills = group.get(
+            "skills",
+            []
+        )
+
+        group_type = group.get(
+            "type",
+            "unspecified"
+        )
+
+        if not group_skills:
+            continue
+
+        group_is_satisfied = any(
+            skill in matched_skills
+            for skill in group_skills
+        )
+
+        if group_is_satisfied:
+            continue
+
+        group_name = format_skill_group(
+            group_skills
+        )
+
+        if group_type == "required":
+            recommendations.append(
+                f"{group_name} is required for this role, "
+                f"but none of these alternatives were detected "
+                f"in your resume. Prioritize gaining or "
+                f"demonstrating experience with at least one "
+                f"of these skills."
+            )
+
+        elif group_type == "preferred":
+            recommendations.append(
+                f"{group_name} is preferred for this role. "
+                f"Consider adding evidence of experience with "
+                f"at least one of these skills if relevant."
+            )
+
+        else:
+            recommendations.append(
+                f"{group_name} appears as an alternative "
+                f"requirement in the job description, but none "
+                f"of these skills were detected in your resume. "
+                f"Consider demonstrating at least one of them "
+                f"if relevant."
+            )
+
+    # 2. Handle independent missing required skills.
     for skill in required_skills:
+        if skill in alternative_skills:
+            continue
+
         if skill in missing_skills:
-            skill_name = format_skill_name(skill)
+            skill_name = format_skill_name(
+                skill
+            )
 
             recommendations.append(
                 f"{skill_name} is a required skill for this role "
@@ -82,10 +195,15 @@ def generate_recommendations(
                 f"{skill_name} experience."
             )
 
-    # 2. Handle missing preferred skills separately
+    # 3. Handle independent missing preferred skills.
     for skill in preferred_skills:
+        if skill in alternative_skills:
+            continue
+
         if skill in missing_skills:
-            skill_name = format_skill_name(skill)
+            skill_name = format_skill_name(
+                skill
+            )
 
             recommendations.append(
                 f"{skill_name} is a preferred skill for this role. "
@@ -93,14 +211,20 @@ def generate_recommendations(
                 f"if you have used it."
             )
 
-    # 3. Handle missing skills that were not classified
+    # 4. Handle independent missing unspecified skills.
     classified_skills = set(
-        required_skills + preferred_skills
+        required_skills
+        + preferred_skills
     )
 
     for skill in missing_skills:
+        if skill in alternative_skills:
+            continue
+
         if skill not in classified_skills:
-            skill_name = format_skill_name(skill)
+            skill_name = format_skill_name(
+                skill
+            )
 
             recommendations.append(
                 f"{skill_name} appears in the job description "
@@ -108,7 +232,7 @@ def generate_recommendations(
                 f"Consider adding evidence of this skill if relevant."
             )
 
-    # 4. Check whether matched skills have project evidence
+    # 5. Check whether matched skills have project evidence.
     for skill in matched_skills:
         sections = skill_evidence.get(
             skill,
@@ -119,15 +243,18 @@ def generate_recommendations(
             "Technical Skills" in sections
             and "Projects" not in sections
         ):
-            skill_name = format_skill_name(skill)
+            skill_name = format_skill_name(
+                skill
+            )
 
             recommendations.append(
                 f"{skill_name} is listed in your skills, "
                 f"but no project evidence was detected. "
-                f"Consider demonstrating it through relevant project work."
+                f"Consider demonstrating it through relevant "
+                f"project work."
             )
 
-    # 5. Handle strong skill coverage
+    # 6. Handle strong skill coverage.
     if not recommendations:
         recommendations.append(
             "Your resume demonstrates strong coverage of the "

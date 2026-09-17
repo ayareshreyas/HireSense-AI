@@ -59,45 +59,98 @@ def calculate_weighted_skill_score(
     required_skills,
     preferred_skills,
     unspecified_skills,
+    alternative_skill_groups=None,
 ):
     """
-    Calculate skill coverage while considering
-    the importance of each job requirement.
+    Calculate requirement-aware skill coverage.
 
     Required skill    = 3 points
     Unspecified skill = 2 points
     Preferred skill   = 1 point
 
-    Returns None when no supported technical
-    skills were detected in the job description.
+    Skills connected by OR are treated as one
+    requirement. Matching any skill in the group
+    earns the full weight for that requirement.
     """
 
     required_weight = 3
     unspecified_weight = 2
     preferred_weight = 1
 
-    total_possible_score = (
-        len(required_skills) * required_weight
-        + len(unspecified_skills) * unspecified_weight
-        + len(preferred_skills) * preferred_weight
-    )
+    if alternative_skill_groups is None:
+        alternative_skill_groups = []
 
-    if total_possible_score == 0:
-        return None
+    grouped_skills = set()
+
+    for group in alternative_skill_groups:
+        for skill in group["skills"]:
+            grouped_skills.add(skill)
+
+    independent_required = [
+        skill
+        for skill in required_skills
+        if skill not in grouped_skills
+    ]
+
+    independent_preferred = [
+        skill
+        for skill in preferred_skills
+        if skill not in grouped_skills
+    ]
+
+    independent_unspecified = [
+        skill
+        for skill in unspecified_skills
+        if skill not in grouped_skills
+    ]
+
+    total_possible_score = (
+        len(independent_required)
+        * required_weight
+        + len(independent_unspecified)
+        * unspecified_weight
+        + len(independent_preferred)
+        * preferred_weight
+    )
 
     earned_score = 0
 
-    for skill in required_skills:
+    for skill in independent_required:
         if skill in resume_skills:
             earned_score += required_weight
 
-    for skill in unspecified_skills:
+    for skill in independent_unspecified:
         if skill in resume_skills:
             earned_score += unspecified_weight
 
-    for skill in preferred_skills:
+    for skill in independent_preferred:
         if skill in resume_skills:
             earned_score += preferred_weight
+
+    for group in alternative_skill_groups:
+        requirement_type = group["type"]
+
+        if requirement_type == "required":
+            group_weight = required_weight
+
+        elif requirement_type == "preferred":
+            group_weight = preferred_weight
+
+        else:
+            group_weight = unspecified_weight
+
+        total_possible_score += group_weight
+
+        group_satisfied = any(
+            skill in resume_skills
+            for skill in group["skills"]
+        )
+
+        if group_satisfied:
+            earned_score += group_weight
+
+    if total_possible_score == 0:
+        return None
 
     weighted_score = (
         earned_score
