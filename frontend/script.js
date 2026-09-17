@@ -13,6 +13,14 @@ const jobDescriptionInput = document.getElementById(
     "job-description"
 );
 
+const statusMessage = document.getElementById(
+    "status-message"
+);
+
+const errorMessage = document.getElementById(
+    "error-message"
+);
+
 
 const resultsSection = document.getElementById(
     "results"
@@ -65,6 +73,8 @@ const recommendationsList = document.getElementById(
 
 analyzeButton.addEventListener("click", async () => {
 
+    clearMessages();
+
     const resumeFile = resumeInput.files[0];
 
     const jobDescription =
@@ -72,13 +82,19 @@ analyzeButton.addEventListener("click", async () => {
 
 
     if (!resumeFile) {
-        alert("Please upload your resume.");
+        showError(
+            "Please upload your resume."
+        );
+
         return;
     }
 
 
     if (!jobDescription) {
-        alert("Please paste a job description.");
+        showError(
+            "Please paste a job description."
+        );
+
         return;
     }
 
@@ -87,7 +103,10 @@ analyzeButton.addEventListener("click", async () => {
         resumeFile.type &&
         resumeFile.type !== "application/pdf"
     ) {
-        alert("Please upload a PDF resume.");
+        showError(
+            "Please upload a PDF resume."
+        );
+
         return;
     }
 
@@ -107,6 +126,12 @@ analyzeButton.addEventListener("click", async () => {
 
     setLoadingState(true);
 
+    resultsSection.hidden = true;
+
+    showStatus(
+        "Analyzing your resume against the job description..."
+    );
+
 
     try {
 
@@ -119,7 +144,16 @@ analyzeButton.addEventListener("click", async () => {
         );
 
 
-        const data = await response.json();
+        let data;
+
+        try {
+            data = await response.json();
+
+        } catch {
+            throw new Error(
+                "The server returned an invalid response."
+            );
+        }
 
 
         if (!response.ok) {
@@ -140,6 +174,8 @@ analyzeButton.addEventListener("click", async () => {
 
         displayResults(data);
 
+        hideStatus();
+
 
     } catch (error) {
 
@@ -149,8 +185,11 @@ analyzeButton.addEventListener("click", async () => {
         );
 
 
-        alert(
-            `Analysis failed: ${error.message}`
+        hideStatus();
+
+        showError(
+            error.message ||
+            "Something went wrong while analyzing your resume."
         );
 
 
@@ -227,7 +266,30 @@ function displayResults(data) {
 function validateRequiredElements() {
 
     const requiredElements = [
-        ["results", resultsSection],
+        [
+            "analyze-button",
+            analyzeButton
+        ],
+        [
+            "resume",
+            resumeInput
+        ],
+        [
+            "job-description",
+            jobDescriptionInput
+        ],
+        [
+            "status-message",
+            statusMessage
+        ],
+        [
+            "error-message",
+            errorMessage
+        ],
+        [
+            "results",
+            resultsSection
+        ],
         [
             "overall-match-score",
             overallMatchScoreElement
@@ -557,6 +619,21 @@ function formatSkillName(skill) {
     }
 
 
+    const normalizedSkill =
+        skill.toLowerCase().trim();
+
+
+    if (normalizedSkill.includes(" or ")) {
+
+        return normalizedSkill
+            .split(" or ")
+            .map((part) => {
+                return formatSkillName(part);
+            })
+            .join(" or ");
+    }
+
+
     const specialNames = {
 
         aws: "AWS",
@@ -594,6 +671,12 @@ function formatSkillName(skill) {
 
         git: "Git",
 
+        aws: "AWS",
+
+        azure: "Azure",
+
+        gcp: "GCP",
+
         "node.js": "Node.js",
 
         "scikit-learn": "Scikit-learn",
@@ -609,10 +692,6 @@ function formatSkillName(skill) {
     };
 
 
-    const normalizedSkill =
-        skill.toLowerCase();
-
-
     if (specialNames[normalizedSkill]) {
 
         return specialNames[
@@ -621,7 +700,7 @@ function formatSkillName(skill) {
     }
 
 
-    return skill
+    return normalizedSkill
         .split(" ")
         .map((word) => {
 
@@ -653,16 +732,74 @@ function formatRequirementText(text) {
 }
 
 
+function showStatus(message) {
+
+    statusMessage.textContent =
+        message;
+
+    statusMessage.hidden =
+        false;
+}
+
+
+function hideStatus() {
+
+    statusMessage.textContent =
+        "";
+
+    statusMessage.hidden =
+        true;
+}
+
+
+function showError(message) {
+
+    errorMessage.textContent =
+        message;
+
+    errorMessage.hidden =
+        false;
+
+    errorMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+
+function hideError() {
+
+    errorMessage.textContent =
+        "";
+
+    errorMessage.hidden =
+        true;
+}
+
+
+function clearMessages() {
+
+    hideStatus();
+    hideError();
+}
+
+
 function setLoadingState(isLoading) {
 
     analyzeButton.disabled =
+        isLoading;
+
+    resumeInput.disabled =
+        isLoading;
+
+    jobDescriptionInput.disabled =
         isLoading;
 
 
     if (isLoading) {
 
         analyzeButton.textContent =
-            "Analyzing...";
+            "Analyzing Resume...";
 
     } else {
 
@@ -670,3 +807,4 @@ function setLoadingState(isLoading) {
             "Analyze Resume";
     }
 }
+
