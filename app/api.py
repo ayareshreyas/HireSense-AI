@@ -1,11 +1,20 @@
 import os
 import tempfile
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import (
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+)
+from fastapi.middleware.cors import (
+    CORSMiddleware,
+)
 
 from app.matcher import (
     build_analysis,
+    build_requirement_aware_skill_lists,
     calculate_overall_score,
     calculate_weighted_skill_score,
     find_skill_evidence,
@@ -16,15 +25,23 @@ from app.parser import (
     extract_section,
     extract_text_from_pdf,
 )
-from app.recommendations import generate_recommendations
-from app.requirements import analyze_job_requirements
-from app.semantic import calculate_semantic_similarity
+from app.recommendations import (
+    generate_recommendations,
+)
+from app.requirements import (
+    analyze_job_requirements,
+)
+from app.semantic import (
+    calculate_semantic_similarity,
+)
 from app.skills import extract_skills
 
 
 app = FastAPI(
     title="HireSense AI",
-    description="AI-powered resume and job matching API",
+    description=(
+        "AI-powered resume and job matching API"
+    ),
     version="1.0.0",
 )
 
@@ -41,7 +58,8 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {
-        "message": "HireSense AI API is running."
+        "message":
+            "HireSense AI API is running."
     }
 
 
@@ -63,16 +81,22 @@ async def analyze_resume(
             detail="Resume file is required.",
         )
 
-    if not resume.filename.lower().endswith(".pdf"):
+    if not resume.filename.lower().endswith(
+        ".pdf"
+    ):
         raise HTTPException(
             status_code=400,
-            detail="Only PDF resumes are supported.",
+            detail=(
+                "Only PDF resumes are supported."
+            ),
         )
 
     if not job_description.strip():
         raise HTTPException(
             status_code=400,
-            detail="Job description cannot be empty.",
+            detail=(
+                "Job description cannot be empty."
+            ),
         )
 
     temp_path = None
@@ -84,7 +108,10 @@ async def analyze_resume(
             delete=False,
             suffix=".pdf",
         ) as temp_file:
-            temp_file.write(file_content)
+            temp_file.write(
+                file_content
+            )
+
             temp_path = temp_file.name
 
         resume_text = extract_text_from_pdf(
@@ -98,19 +125,26 @@ async def analyze_resume(
         if not resume_text:
             raise HTTPException(
                 status_code=400,
-                detail="No readable text was found in the resume.",
+                detail=(
+                    "No readable text was found "
+                    "in the resume."
+                ),
             )
 
         cleaned_job_description = clean_text(
             job_description
         )
 
+        # Extract skills from the resume.
         resume_skills = extract_skills(
             resume_text
         )
 
-        job_requirements = analyze_job_requirements(
-            cleaned_job_description
+        # Parse structured job requirements.
+        job_requirements = (
+            analyze_job_requirements(
+                cleaned_job_description
+            )
         )
 
         job_skills = job_requirements[
@@ -135,11 +169,29 @@ async def analyze_resume(
             ]
         )
 
-        matched_skills, missing_skills = match_skills(
+        # Raw literal matching is retained
+        # internally for evidence and
+        # recommendation generation.
+        (
+            raw_matched_skills,
+            raw_missing_skills,
+        ) = match_skills(
             resume_skills,
             job_skills,
         )
 
+        # Build requirement-aware lists for
+        # user-facing matched/missing skills.
+        (
+            display_matched_skills,
+            display_missing_skills,
+        ) = build_requirement_aware_skill_lists(
+            resume_skills,
+            job_skills,
+            alternative_skill_groups,
+        )
+
+        # Extract important resume sections.
         professional_summary = extract_section(
             resume_text,
             "PROFESSIONAL SUMMARY",
@@ -181,34 +233,46 @@ async def analyze_resume(
                 projects,
         }
 
+        # Evidence must use raw matched skills
+        # because these are actual individual
+        # technical skills from the resume.
         skill_evidence = find_skill_evidence(
-            matched_skills,
+            raw_matched_skills,
             resume_sections,
         )
 
-        skill_score = calculate_weighted_skill_score(
-            resume_skills,
-            required_skills,
-            preferred_skills,
-            unspecified_skills,
-            alternative_skill_groups,
+        # Calculate OR-aware weighted coverage.
+        skill_score = (
+            calculate_weighted_skill_score(
+                resume_skills,
+                required_skills,
+                preferred_skills,
+                unspecified_skills,
+                alternative_skill_groups,
+            )
         )
 
-        semantic_score = calculate_semantic_similarity(
-            resume_text,
-            cleaned_job_description,
+        # Calculate semantic similarity.
+        semantic_score = (
+            calculate_semantic_similarity(
+                resume_text,
+                cleaned_job_description,
+            )
         )
 
+        # Calculate final overall match score.
         overall_score = calculate_overall_score(
             skill_score,
             semantic_score,
         )
 
+        # User-facing analysis uses the
+        # requirement-aware display lists.
         analysis = build_analysis(
             resume_skills,
             job_skills,
-            matched_skills,
-            missing_skills,
+            display_matched_skills,
+            display_missing_skills,
             skill_evidence,
             skill_score,
             semantic_score,
@@ -239,11 +303,17 @@ async def analyze_resume(
                 ],
         }
 
-        recommendations = generate_recommendations(
-            missing_skills,
-            matched_skills,
-            skill_evidence,
-            job_requirements,
+        # Recommendations continue using raw
+        # matching so the recommendation engine
+        # can reason about individual skills and
+        # alternative groups itself.
+        recommendations = (
+            generate_recommendations(
+                raw_missing_skills,
+                raw_matched_skills,
+                skill_evidence,
+                job_requirements,
+            )
         )
 
         analysis["recommendations"] = (
@@ -269,4 +339,6 @@ async def analyze_resume(
             temp_path
             and os.path.exists(temp_path)
         ):
-            os.remove(temp_path)
+            os.remove(
+                temp_path
+            )

@@ -2,6 +2,13 @@ from app.skills import contains_skill
 
 
 def match_skills(resume_skills, job_skills):
+    """
+    Perform literal resume-to-job skill matching.
+
+    These raw results are useful internally for
+    evidence detection and recommendation logic.
+    """
+
     matched_skills = []
     missing_skills = []
 
@@ -14,6 +21,103 @@ def match_skills(resume_skills, job_skills):
     return matched_skills, missing_skills
 
 
+def build_requirement_aware_skill_lists(
+    resume_skills,
+    job_skills,
+    alternative_skill_groups=None,
+):
+    """
+    Build user-facing matched and missing skill lists.
+
+    Skills connected by OR are treated as one
+    requirement.
+
+    Example:
+        TensorFlow OR PyTorch
+
+    If TensorFlow exists in the resume, the
+    requirement is satisfied and PyTorch should
+    not appear as a missing skill.
+
+    If neither Docker nor Kubernetes exists,
+    the missing requirement is displayed as:
+        Docker or Kubernetes
+    """
+
+    if alternative_skill_groups is None:
+        alternative_skill_groups = []
+
+    grouped_skills = set()
+
+    for group in alternative_skill_groups:
+        for skill in group.get(
+            "skills",
+            []
+        ):
+            grouped_skills.add(skill)
+
+    display_matched_skills = []
+    display_missing_skills = []
+
+    # Handle normal independent skills.
+    for skill in job_skills:
+        if skill in grouped_skills:
+            continue
+
+        if skill in resume_skills:
+            display_matched_skills.append(
+                skill
+            )
+        else:
+            display_missing_skills.append(
+                skill
+            )
+
+    # Handle OR requirement groups.
+    for group in alternative_skill_groups:
+        group_skills = group.get(
+            "skills",
+            []
+        )
+
+        if not group_skills:
+            continue
+
+        matched_group_skills = [
+            skill
+            for skill in group_skills
+            if skill in resume_skills
+        ]
+
+        if matched_group_skills:
+            # Show only the skill or skills from the
+            # alternative group that the resume has.
+            for skill in matched_group_skills:
+                if (
+                    skill
+                    not in display_matched_skills
+                ):
+                    display_matched_skills.append(
+                        skill
+                    )
+
+        else:
+            # Represent the entire unsatisfied OR
+            # requirement as one readable item.
+            group_label = " or ".join(
+                group_skills
+            )
+
+            display_missing_skills.append(
+                group_label
+            )
+
+    return (
+        display_matched_skills,
+        display_missing_skills,
+    )
+
+
 def find_skill_evidence(
     matched_skills,
     resume_sections
@@ -23,8 +127,13 @@ def find_skill_evidence(
     for skill in matched_skills:
         evidence[skill] = []
 
-        for section_name, section_text in resume_sections.items():
-            if contains_skill(section_text, skill):
+        for section_name, section_text in (
+            resume_sections.items()
+        ):
+            if contains_skill(
+                section_text,
+                skill
+            ):
                 evidence[skill].append(
                     section_name
                 )
@@ -177,7 +286,10 @@ def calculate_overall_score(
     """
 
     if skill_score is None:
-        return round(semantic_score, 2)
+        return round(
+            semantic_score,
+            2
+        )
 
     skill_weight = 0.70
     semantic_weight = 0.30
@@ -187,7 +299,10 @@ def calculate_overall_score(
         + semantic_score * semantic_weight
     )
 
-    return round(overall_score, 2)
+    return round(
+        overall_score,
+        2
+    )
 
 
 def build_analysis(
@@ -201,12 +316,27 @@ def build_analysis(
     overall_score,
 ):
     return {
-        "resume_skills": resume_skills,
-        "job_skills": job_skills,
-        "matched_skills": matched_skills,
-        "missing_skills": missing_skills,
-        "skill_evidence": skill_evidence,
-        "skill_coverage": skill_score,
-        "semantic_similarity": semantic_score,
-        "overall_match_score": overall_score,
+        "resume_skills":
+            resume_skills,
+
+        "job_skills":
+            job_skills,
+
+        "matched_skills":
+            matched_skills,
+
+        "missing_skills":
+            missing_skills,
+
+        "skill_evidence":
+            skill_evidence,
+
+        "skill_coverage":
+            skill_score,
+
+        "semantic_similarity":
+            semantic_score,
+
+        "overall_match_score":
+            overall_score,
     }
