@@ -4,6 +4,19 @@ HireSense AI is an AI-powered resume and job description matching system that an
 
 It combines **skill-based matching**, **job requirement analysis**, **semantic similarity**, **resume evidence detection**, and **personalized recommendations** to provide a structured assessment of resume-job compatibility.
 
+## Live Demo
+
+**Live Application:**
+https://hiresense-ai-frontend-dcvt.onrender.com
+
+**Production API:**
+https://hiresense-ai-qh6x.onrender.com
+
+**API Documentation:**
+https://hiresense-ai-qh6x.onrender.com/docs
+
+> The backend is hosted on Render's free tier, so the first request after a period of inactivity may take longer while the service starts.
+
 ---
 
 ## Features
@@ -61,22 +74,23 @@ Skills           Skills       Skill Groups
     +--------------+--------------+
                    |
                    v
-          Weighted Skill Score
+           Weighted Skill Score
                    |
                    +--------------------+
                    |                    |
                    v                    v
-          Skill Coverage        Semantic Similarity
+           Skill Coverage        Semantic Similarity
                                       using
-                               all-MiniLM-L6-v2
+                                all-MiniLM-L6-v2
+                                ONNX Runtime
                    |                    |
                    +---------+----------+
                              |
                              v
-                    Overall Match Score
+                     Overall Match Score
                              |
                              v
-                 Personalized Recommendations
+                  Personalized Recommendations
 ```
 
 ---
@@ -122,15 +136,41 @@ If no supported technical skills are recognized in the job description, skill co
 
 ## Semantic Matching
 
-HireSense AI uses the Sentence Transformers model:
+HireSense AI uses the:
 
 ```text
-all-MiniLM-L6-v2
+sentence-transformers/all-MiniLM-L6-v2
 ```
 
-The resume and job description are converted into embeddings, and cosine similarity is used to measure their semantic relationship.
+model to generate semantic embeddings for the resume and job description.
 
-This allows the system to evaluate more than exact keyword overlap.
+For production deployment, semantic inference is performed directly with **ONNX Runtime** using a quantized ONNX version of the MiniLM model rather than loading the full PyTorch/Sentence Transformers runtime.
+
+The semantic pipeline performs:
+
+```text
+Resume + Job Description
+        |
+        v
+Hugging Face Tokenizer
+        |
+        v
+Quantized MiniLM ONNX Model
+        |
+        v
+Mean Pooling
+        |
+        v
+L2 Normalization
+        |
+        v
+Cosine Similarity
+        |
+        v
+Semantic Relevance Score
+```
+
+This keeps the embedding-based semantic matching functionality while significantly reducing runtime memory usage for deployment.
 
 ---
 
@@ -177,13 +217,19 @@ and the resume already contains TensorFlow, the system does not incorrectly reco
 - Python
 - FastAPI
 - PyMuPDF
-- Sentence Transformers
 - Uvicorn
+- NumPy
+- ONNX Runtime
+- Hugging Face Hub
+- Hugging Face Tokenizers
 
 ### AI / NLP
 
 - `all-MiniLM-L6-v2`
+- Quantized ONNX inference
 - Sentence embeddings
+- Mean pooling
+- L2 normalization
 - Cosine similarity
 - Rule-based skill extraction
 - Requirement-aware skill matching
@@ -193,6 +239,12 @@ and the resume already contains TensorFlow, the system does not incorrectly reco
 - HTML5
 - CSS3
 - JavaScript
+
+### Deployment
+
+- Render Web Service — FastAPI backend
+- Render Static Site — frontend
+- GitHub — source control and deployment integration
 
 ### Development
 
@@ -224,6 +276,12 @@ HireSense-AI/
 │
 ├── sample_jobs/
 │   └── job_description.txt
+│
+├── screenshots/
+│   ├── hiresense-interface.png
+│   ├── match-analysis.png
+│   ├── recommendations.png
+│   └── skill-evidence.png
 │
 ├── .gitignore
 ├── README.md
@@ -265,7 +323,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-The semantic model may be downloaded automatically the first time the application starts.
+The tokenizer and ONNX model files may be downloaded automatically from Hugging Face the first time the semantic matching module is initialized.
 
 ---
 
@@ -285,20 +343,26 @@ FastAPI also provides interactive API documentation at:
 http://127.0.0.1:8000/docs
 ```
 
+The deployed production API documentation is available at:
+
+```text
+https://hiresense-ai-qh6x.onrender.com/docs
+```
+
 ---
 
 ## Running the Frontend
 
-Keep the FastAPI backend running.
+The deployed frontend is configured to communicate with the production HireSense AI API.
 
-Then open a second terminal from the project directory and run:
+To serve the frontend locally, open a terminal from the project directory and run:
 
 ```bash
 cd frontend
 python3 -m http.server 5500
 ```
 
-Open:
+Then open:
 
 ```text
 http://127.0.0.1:5500
@@ -421,6 +485,61 @@ The system identifies job requirements and generates requirement-aware recommend
 
 ---
 
+## Deployment
+
+HireSense AI is deployed as two services:
+
+```text
+User
+ |
+ v
+Render Static Site
+Frontend
+ |
+ v
+Render Web Service
+FastAPI API
+ |
+ +--------------------------+
+ |                          |
+ v                          v
+Resume / Requirement     Quantized MiniLM
+Processing               ONNX Inference
+ |                          |
+ +------------+-------------+
+              |
+              v
+        Analysis Result
+```
+
+### Frontend
+
+The HTML, CSS, and JavaScript frontend is hosted as a Render Static Site.
+
+```text
+https://hiresense-ai-frontend-dcvt.onrender.com
+```
+
+### Backend
+
+The FastAPI application is hosted as a Render Web Service.
+
+```text
+https://hiresense-ai-qh6x.onrender.com
+```
+
+### Deployment Optimization
+
+The initial semantic matching implementation used Sentence Transformers with a PyTorch-based runtime.
+
+Because that runtime required substantially more memory than the production environment available to the project, the semantic inference layer was redesigned to run the MiniLM model directly through ONNX Runtime.
+
+The production implementation uses a quantized ONNX model together with Hugging Face Tokenizers, NumPy-based mean pooling and normalization, and cosine similarity.
+
+This reduced the semantic inference runtime memory footprint while preserving embedding-based resume-job comparison.
+
+---
+
 ## Current Limitations
 
 HireSense AI is currently designed as a portfolio-scale MVP.
@@ -434,6 +553,7 @@ Some current limitations include:
 - Experience and education extraction is rule-based
 - Semantic similarity is calculated across the overall resume and job description
 - The system provides resume-job matching assistance rather than making hiring decisions
+- The production backend may require a short startup period after inactivity on the free hosting tier
 
 ---
 
@@ -451,7 +571,7 @@ Potential future improvements include:
 - Analysis history
 - Resume comparison across multiple job descriptions
 - Resume improvement suggestions with rewritten examples
-- Cloud deployment and persistent storage
+- Persistent storage for user-authorized analysis history
 
 ---
 
@@ -462,6 +582,8 @@ Uploaded resumes are processed temporarily by the backend.
 The API creates a temporary PDF file during analysis and removes it after the request finishes. Resume files are not intentionally stored permanently by the application.
 
 The `sample_resumes/` directory is also excluded from Git version control to reduce the risk of accidentally committing personal resume files.
+
+Users should avoid uploading resumes containing information they do not wish to send to the deployed service.
 
 ---
 
@@ -476,8 +598,11 @@ HireSense AI was built as a portfolio project to explore practical applications 
 - Requirement extraction
 - Weighted matching algorithms
 - Recommendation systems
+- ONNX model inference
 - REST API development
 - Frontend-backend integration
+- Production deployment
+- ML inference optimization
 
 ---
 
@@ -496,5 +621,4 @@ LinkedIn: [Shreyas Ayare](https://www.linkedin.com/in/shreyas-ayare)
 ## License
 
 This project currently does not include an open-source license. All rights are reserved by the author.
-
 
