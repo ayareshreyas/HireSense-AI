@@ -1,5 +1,8 @@
 pymupdf
-sentence-transformers
+numpy
+onnxruntime
+huggingface-hub
+tokenizers
 fastapi
 uvicorn[standard]
 python-multipart
