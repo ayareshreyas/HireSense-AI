@@ -19,6 +19,7 @@ from app.parser import (
 from app.recommendations import generate_recommendations
 from app.requirements import analyze_job_requirements
 from app.semantic import calculate_semantic_similarity
+from app.skills import extract_skills
 
 
 app = FastAPI(
@@ -104,12 +105,12 @@ async def analyze_resume(
             job_description
         )
 
-        from app.skills import extract_skills
-
+        # Extract skills from the resume
         resume_skills = extract_skills(
             resume_text
         )
 
+        # Analyze the job description
         job_requirements = analyze_job_requirements(
             cleaned_job_description
         )
@@ -130,11 +131,13 @@ async def analyze_resume(
             "unspecified_skills"
         ]
 
+        # Match resume skills against job skills
         matched_skills, missing_skills = match_skills(
             resume_skills,
             job_skills,
         )
 
+        # Extract important resume sections
         professional_summary = extract_section(
             resume_text,
             "PROFESSIONAL SUMMARY",
@@ -176,11 +179,13 @@ async def analyze_resume(
                 projects,
         }
 
+        # Find evidence for matched skills
         skill_evidence = find_skill_evidence(
             matched_skills,
             resume_sections,
         )
 
+        # Calculate requirement-aware weighted skill coverage
         skill_score = calculate_weighted_skill_score(
             resume_skills,
             required_skills,
@@ -188,16 +193,19 @@ async def analyze_resume(
             unspecified_skills,
         )
 
+        # Calculate semantic similarity
         semantic_score = calculate_semantic_similarity(
             resume_text,
             cleaned_job_description,
         )
 
+        # Calculate final overall match score
         overall_score = calculate_overall_score(
             skill_score,
             semantic_score,
         )
 
+        # Build base analysis
         analysis = build_analysis(
             resume_skills,
             job_skills,
@@ -209,12 +217,7 @@ async def analyze_resume(
             overall_score,
         )
 
-        recommendations = generate_recommendations(
-            missing_skills,
-            matched_skills,
-            skill_evidence,
-        )
-
+        # Add structured job requirements
         analysis["job_requirements"] = {
             "required_skills":
                 required_skills,
@@ -235,6 +238,14 @@ async def analyze_resume(
                     "education_requirements"
                 ],
         }
+
+        # Generate requirement-aware recommendations
+        recommendations = generate_recommendations(
+            missing_skills,
+            matched_skills,
+            skill_evidence,
+            job_requirements,
+        )
 
         analysis["recommendations"] = (
             recommendations
