@@ -7,7 +7,7 @@ It combines **skill-based matching**, **job requirement analysis**, **semantic s
 ## Live Demo
 
 **Live Application:**
-https://hiresense-ai-frontend-dcvt.onrender.com
+https://hiresense-ai-frontend-dcvf.onrender.com
 
 **Production API:**
 https://hiresense-ai-qh6x.onrender.com
@@ -517,7 +517,7 @@ Processing               ONNX Inference
 The HTML, CSS, and JavaScript frontend is hosted as a Render Static Site.
 
 ```text
-https://hiresense-ai-frontend-dcvt.onrender.com
+https://hiresense-ai-frontend-dcvf.onrender.com
 ```
 
 ### Backend
