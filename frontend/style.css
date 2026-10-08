@@ -1,4 +1,67 @@
-/* ---------- Global ---------- */
+/* =========================================================
+   HireSense AI
+   UI / UX — Match Analysis Refinement
+   ========================================================= */
+
+
+/* =========================================================
+   Design Tokens
+   ========================================================= */
+
+:root {
+    --bg: #f7f8fb;
+
+    --surface: #ffffff;
+    --surface-soft: #fafbfc;
+    --surface-muted: #f4f5f8;
+
+    --text: #171923;
+    --text-secondary: #626878;
+    --text-muted: #9298a6;
+
+    --border: #e6e8ed;
+    --border-hover: #d5d8e1;
+
+    --accent: #4f46e5;
+    --accent-dark: #4338ca;
+    --accent-soft: #eef0ff;
+    --accent-border: #dcdffd;
+
+    --success: #15845f;
+    --success-soft: #eaf8f2;
+    --success-border: #d1eee2;
+
+    --danger: #c34242;
+    --danger-soft: #fff1f1;
+    --danger-border: #f1d4d4;
+
+    --warning: #a66b00;
+    --warning-soft: #fff8e7;
+    --warning-border: #f2dfad;
+
+    --shadow-sm:
+        0 2px 8px rgba(17, 24, 39, 0.04);
+
+    --shadow-md:
+        0 10px 30px rgba(17, 24, 39, 0.06);
+
+    --shadow-lg:
+        0 18px 45px rgba(17, 24, 39, 0.08);
+
+    --shadow-accent:
+        0 14px 38px rgba(79, 70, 229, 0.10);
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+
+    --container: 1120px;
+}
+
+
+/* =========================================================
+   Global Reset
+   ========================================================= */
 
 * {
     margin: 0;
@@ -6,463 +69,2737 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f7f8fc;
-    color: #1f2937;
-    line-height: 1.6;
+
+html {
+    scroll-behavior: smooth;
 }
+
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    background: var(--bg);
+    color: var(--text);
+
+    line-height: 1.6;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+::selection {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+}
+
+
+/* =========================================================
+   Accessibility
+   ========================================================= */
+
+.visually-hidden {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    padding: 0;
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   Container
+   ========================================================= */
 
 .container {
-    width: min(1100px, 90%);
+    width: min(var(--container), calc(100% - 40px));
     margin: 0 auto;
 }
 
 
-/* ---------- Header ---------- */
+/* =========================================================
+   Header
+   ========================================================= */
 
 header {
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 22px 0;
+    background: rgba(255, 255, 255, 0.96);
+
+    border-bottom: 1px solid var(--border);
+
+    padding: 21px 0;
+
+    position: relative;
+    z-index: 10;
 }
+
+
+header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
 
 header h1 {
-    font-size: 28px;
-    color: #111827;
+    color: var(--text);
+
+    font-size: 23px;
+    font-weight: 750;
+
+    letter-spacing: -0.035em;
+
+    line-height: 1.2;
 }
+
 
 header p {
-    color: #6b7280;
-    margin-top: 2px;
+    color: var(--text-muted);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    line-height: 1.4;
 }
 
 
-/* ---------- Hero ---------- */
+/* =========================================================
+   Hero
+   ========================================================= */
 
 .hero {
+    max-width: 820px;
+
+    margin: 0 auto;
+
+    padding: 76px 20px 48px;
+
     text-align: center;
-    padding: 65px 20px 45px;
 }
+
 
 .hero h2 {
-    font-size: 38px;
-    line-height: 1.2;
-    color: #111827;
-    margin-bottom: 15px;
+    max-width: 760px;
+
+    margin: 0 auto 17px;
+
+    color: var(--text);
+
+    font-size: clamp(32px, 5vw, 46px);
+    font-weight: 750;
+
+    line-height: 1.08;
+
+    letter-spacing: -0.045em;
 }
+
 
 .hero p {
-    max-width: 700px;
+    max-width: 680px;
+
     margin: 0 auto;
-    color: #6b7280;
-    font-size: 17px;
+
+    color: var(--text-secondary);
+
+    font-size: 16px;
+    font-weight: 400;
+
+    line-height: 1.7;
 }
 
 
-/* ---------- Analyzer ---------- */
+/* =========================================================
+   Analyzer
+   ========================================================= */
 
 .analyzer {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 25px;
-}
 
-.resume-upload,
-.job-input {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 28px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-}
+    grid-template-columns: 0.9fr 1.1fr;
 
-.resume-upload h3,
-.job-input h3 {
-    font-size: 20px;
-    margin-bottom: 5px;
-    color: #111827;
-}
+    gap: 18px;
 
-.resume-upload p,
-.job-input p {
-    color: #6b7280;
     margin-bottom: 20px;
 }
 
 
-/* ---------- File Input ---------- */
+.resume-upload,
+.job-input {
+    background: var(--surface);
 
-input[type="file"] {
-    width: 100%;
-    padding: 14px;
-    border: 2px dashed #d1d5db;
-    border-radius: 10px;
-    background: #f9fafb;
-    cursor: pointer;
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    padding: 27px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 
-/* ---------- Job Description ---------- */
+.resume-upload:hover,
+.job-input:hover {
+    border-color: var(--border-hover);
 
-textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 220px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    padding: 15px;
-    font-family: inherit;
-    font-size: 15px;
-    outline: none;
-    transition: 0.2s;
-}
-
-textarea:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    box-shadow: var(--shadow-md);
 }
 
 
-/* ---------- Analyze Button ---------- */
+/* =========================================================
+   Analyzer Card Header
+   ========================================================= */
 
-#analyze-button {
+.input-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 8px;
+}
+
+
+.input-header > div {
+    min-width: 0;
+}
+
+
+.input-step {
     display: block;
-    width: 220px;
-    margin: 10px auto 20px;
-    padding: 14px 24px;
 
-    border: none;
-    border-radius: 10px;
+    margin-bottom: 4px;
 
-    background: #4f46e5;
-    color: white;
+    color: var(--text-secondary);
 
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
 
-    cursor: pointer;
-    transition: 0.2s;
+    line-height: 1.2;
+
+    letter-spacing: 0.01em;
 }
 
-#analyze-button:hover:not(:disabled) {
-    background: #4338ca;
+
+.resume-upload h3,
+.job-input h3 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 17px;
+    font-weight: 700;
+
+    letter-spacing: -0.015em;
+
+    line-height: 1.3;
+}
+
+
+.input-badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 25px;
+
+    flex: 0 0 auto;
+
+    padding: 5px 9px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    background: var(--surface-muted);
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+    font-weight: 750;
+
+    line-height: 1;
+
+    letter-spacing: 0.045em;
+}
+
+
+.resume-upload p,
+.job-input p {
+    margin-bottom: 19px;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   Resume Upload
+   ========================================================= */
+
+.resume-upload {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.file-input-label {
+    position: relative;
+
+    display: flex;
+
+    flex: 1;
+
+    min-height: 238px;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    padding: 28px 24px;
+
+    border: 1.5px dashed #cfd3dc;
+
+    border-radius: var(--radius-md);
+
+    background:
+        linear-gradient(
+            180deg,
+            #fbfcff 0%,
+            #f8f9fc 100%
+        );
+
+    color: var(--text);
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.file-input-label:hover {
+    border-color: var(--accent);
+
+    background:
+        linear-gradient(
+            180deg,
+            #fafaff 0%,
+            #f6f7ff 100%
+        );
+
+    box-shadow:
+        0 8px 24px rgba(79, 70, 229, 0.06);
+
     transform: translateY(-1px);
 }
 
+
+.file-input-label.has-file {
+    border-color: #6366f1;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fafaff 0%,
+            #f6f7ff 100%
+        );
+
+    box-shadow:
+        0 8px 24px rgba(79, 70, 229, 0.07);
+}
+
+
+.file-input-label.has-file .file-input-icon {
+    border-color: var(--accent-border);
+
+    background: var(--accent-soft);
+
+    color: var(--accent);
+}
+
+
+.file-input-label.has-file small {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+
+.file-input-label:focus-within {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.09);
+}
+
+
+.file-input-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 13px;
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: 12px;
+
+    background: var(--accent-soft);
+
+    color: var(--accent);
+
+    font-size: 20px;
+    font-weight: 650;
+
+    line-height: 1;
+}
+
+
+.file-input-title {
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: -0.01em;
+
+    line-height: 1.4;
+}
+
+
+.file-input-label small {
+    margin-top: 5px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 500;
+
+    line-height: 1.4;
+}
+
+
+/*
+   Keep the real file input functional while presenting
+   the custom upload surface above it.
+*/
+
+input[type="file"] {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    padding: 0;
+
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+
+    border: 0;
+}
+
+
+input[type="file"]:focus-visible + .file-input-label {
+    outline: none;
+}
+
+
+/* =========================================================
+   Job Description
+   ========================================================= */
+
+.job-input {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.job-input textarea {
+    flex: 1;
+}
+
+
+textarea {
+    width: 100%;
+
+    min-height: 220px;
+
+    resize: vertical;
+
+    padding: 15px 16px;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    background: var(--surface-soft);
+
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    line-height: 1.65;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+textarea::placeholder {
+    color: #a5aab5;
+}
+
+
+textarea:hover {
+    border-color: var(--border-hover);
+}
+
+
+textarea:focus {
+    background: var(--surface);
+
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.09);
+}
+
+
+.input-helper {
+    margin-top: 10px;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   Analyze Button
+   ========================================================= */
+
+#analyze-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 220px;
+
+    min-height: 48px;
+
+    margin: 12px auto 58px;
+
+    padding: 13px 24px;
+
+    border: 0;
+
+    border-radius: 11px;
+
+    background: var(--accent);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: -0.01em;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.16);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#analyze-button:hover {
+    background: var(--accent-dark);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 11px 24px rgba(79, 70, 229, 0.20);
+}
+
+
+#analyze-button:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        0 5px 14px rgba(79, 70, 229, 0.14);
+}
+
+
+#analyze-button:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 4px rgba(79, 70, 229, 0.12),
+        0 8px 20px rgba(79, 70, 229, 0.16);
+}
+
+
+/* =========================================================
+   Loading State
+   ========================================================= */
+
 #analyze-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+    position: relative;
+
+    background: #6366f1;
+
+    color: rgba(255, 255, 255, 0.94);
+
+    opacity: 1;
+
+    cursor: wait;
+
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.12);
+
     transform: none;
 }
 
 
-/* ---------- Status & Error Messages ---------- */
+#analyze-button:disabled::before {
+    content: "";
+
+    width: 13px;
+    height: 13px;
+
+    margin-right: 9px;
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+
+    border-top-color: #ffffff;
+
+    border-radius: 50%;
+
+    animation:
+        hiresense-spinner 0.75s linear infinite;
+}
+
+
+@keyframes hiresense-spinner {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.analyzer input:disabled,
+.analyzer textarea:disabled {
+    opacity: 0.62;
+
+    cursor: wait;
+}
+
+
+/* =========================================================
+   Status & Validation Messages
+   ========================================================= */
 
 .status-message,
 .error-message {
-    max-width: 700px;
-    margin: 0 auto 35px;
-    padding: 14px 18px;
+    width: min(
+        680px,
+        100%
+    );
+
+    margin:
+        -30px
+        auto
+        34px;
+
+    padding:
+        13px
+        16px;
+
     border-radius: 10px;
+
+    font-size: 13px;
+
+    line-height: 1.55;
+
     text-align: center;
-    font-size: 14px;
-    font-weight: 500;
 }
+
+
+/* ---------------------------------------------------------
+   Analysis Status
+   --------------------------------------------------------- */
 
 .status-message {
-    background: #eef2ff;
-    border: 1px solid #c7d2fe;
-    color: #4338ca;
+    border: 1px solid var(--accent-border);
+
+    background:
+        linear-gradient(
+            180deg,
+            #fafaff 0%,
+            #f6f7ff 100%
+        );
+
+    color: #4f46e5;
+
+    box-shadow:
+        0 6px 18px rgba(
+            79,
+            70,
+            229,
+            0.06
+        );
+
+    animation:
+        hiresense-message-in
+        0.22s
+        ease
+        both;
 }
+
+
+/* ---------------------------------------------------------
+   Validation / Error
+   --------------------------------------------------------- */
 
 .error-message {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 48px;
+
+    padding:
+        12px
+        16px
+        12px
+        49px;
+
+    border: 1px solid #efc5c5;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffafa 0%,
+            #fff6f6 100%
+        );
+
+    color: #a92b22;
+
+    font-size: 13px;
+    font-weight: 550;
+
+    line-height: 1.55;
+
+    text-align: left;
+
+    box-shadow:
+        0 7px 20px rgba(
+            180,
+            35,
+            24,
+            0.07
+        );
+
+    animation:
+        hiresense-message-in
+        0.22s
+        ease
+        both;
 }
 
-.status-message[hidden],
-.error-message[hidden],
-.results[hidden] {
-    display: none;
+
+.error-message::before {
+    content: "!";
+
+    position: absolute;
+
+    top: 50%;
+    left: 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 21px;
+    height: 21px;
+
+    border-radius: 7px;
+
+    background: #fbe5e5;
+
+    color: #b42318;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    line-height: 1;
+
+    transform: translateY(-50%);
 }
 
 
-/* ---------- Results ---------- */
+.error-message::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 3px;
+    height: 100%;
+
+    background: #d84b4b;
+}
+
+
+@keyframes hiresense-message-in {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(
+                -4px
+            );
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(
+                0
+            );
+    }
+}
+
+
+/* =========================================================
+   Results
+   ========================================================= */
 
 .results {
-    margin-top: 35px;
-    margin-bottom: 70px;
+    margin-bottom: 80px;
+
+    scroll-margin-top: 30px;
+
+    animation:
+        hiresense-results-in 0.35s ease both;
 }
+
 
 .results > h2 {
-    text-align: center;
     margin-bottom: 30px;
-    font-size: 28px;
+
+    color: var(--text);
+
+    text-align: left;
+
+    font-size: 29px;
+    font-weight: 750;
+
+    letter-spacing: -0.04em;
+
+    line-height: 1.2;
+
+    animation:
+        hiresense-result-section-in
+        0.32s
+        ease
+        both;
+
+    animation-delay: 0.04s;
 }
 
 
-/* ---------- Overall Match Score ---------- */
+/* =========================================================
+   Overall Match Score
+   ========================================================= */
 
 .overall-score-card {
-    max-width: 620px;
-    margin: 0 auto 25px;
-    padding: 34px 28px;
+    position: relative;
 
-    background: #ffffff;
-    border: 2px solid #4f46e5;
-    border-radius: 16px;
+    max-width: 820px;
+
+    margin: 0 auto 20px;
+
+    padding: 38px 38px 31px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #fdfdff 100%
+        );
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: var(--radius-lg);
 
     text-align: center;
 
-    box-shadow: 0 6px 24px rgba(79, 70, 229, 0.10);
+    box-shadow:
+        0 18px 45px rgba(79, 70, 229, 0.08);
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.09s;
 }
+
+
+.overall-score-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #4f46e5,
+            #6366f1
+        );
+}
+
+
+.overall-score-card::after {
+    content: "";
+
+    display: block;
+
+    width: 100%;
+    height: 7px;
+
+    margin-top: 23px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            to right,
+            var(--accent) 0%,
+            var(--accent) var(--match-score, 0%),
+            #eceef3 var(--match-score, 0%),
+            #eceef3 100%
+        );
+}
+
 
 .overall-score-card h3 {
-    color: #4b5563;
-    font-size: 18px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
 }
+
 
 .overall-score-card p {
-    color: #4f46e5;
-    font-size: 52px;
-    line-height: 1.2;
-    font-weight: 750;
-    margin: 5px 0;
+    position: relative;
+
+    margin: 0;
+
+    color: var(--accent);
+
+    font-size: clamp(64px, 9vw, 82px);
+    font-weight: 780;
+
+    line-height: 0.95;
+
+    letter-spacing: -0.07em;
 }
+
+
+.overall-score-card p::after {
+    content: "Strong Match";
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    min-height: 27px;
+
+    margin: 14px auto 0;
+
+    padding: 5px 11px;
+
+    border: 1px solid var(--success-border);
+
+    border-radius: 999px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 0.01em;
+}
+
 
 .overall-score-card span {
-    color: #6b7280;
-    font-size: 14px;
+    display: block;
+
+    max-width: 520px;
+
+    margin: 12px auto 0;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
 }
 
-
-/* ---------- Secondary Scores ---------- */
+/* =========================================================
+   Secondary Scores
+   ========================================================= */
 
 .scores {
     display: grid;
+
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 25px;
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.15s;
 }
+
 
 .score-card {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 28px;
-    text-align: center;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    position: relative;
+
+    min-height: 154px;
+
+    padding: 27px 28px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            #6366f1
+        )
+        top / 100% 3px no-repeat,
+        var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
+
+
+.score-card:hover {
+    border-color: var(--accent-border);
+
+    box-shadow: var(--shadow-md);
+
+    transform: translateY(-1px);
+}
+
 
 .score-card h3 {
-    color: #6b7280;
-    font-size: 16px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 0.055em;
+
+    text-transform: uppercase;
 }
+
 
 .score-card p {
-    font-size: 38px;
-    font-weight: 700;
-    color: #4f46e5;
+    color: var(--text);
+
+    font-size: 42px;
+    font-weight: 760;
+
+    line-height: 1;
+
+    letter-spacing: -0.05em;
 }
 
 
-/* ---------- Skill Results ---------- */
+.score-card:first-child::after {
+    content: "How many relevant skills your resume covers";
 
-.skills-results {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 25px;
+    display: block;
+
+    max-width: 300px;
+
+    margin-top: 13px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    line-height: 1.5;
 }
+
+
+.score-card:last-child::after {
+    content: "How closely your resume aligns with the role";
+
+    display: block;
+
+    max-width: 300px;
+
+    margin-top: 13px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+.score-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 27px;
+    right: 28px;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 0 4px var(--accent-soft);
+}
+
+
+.score-card:last-child::before {
+    background: #6366f1;
+}
+
+
+/* =========================================================
+   Shared Result Cards
+   ========================================================= */
 
 .skills-results > div,
 .skill-evidence,
 .job-requirements,
 .recommendations {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 28px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
 }
 
-.skills-results h3,
-.skill-evidence h3,
-.job-requirements h3,
-.recommendations h3 {
+
+/* =========================================================
+   Matched / Missing Skills
+   ========================================================= */
+
+.skills-results {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+
     margin-bottom: 18px;
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.21s;
 }
+
+
+.skills-results > div {
+    position: relative;
+
+    min-width: 0;
+
+    padding: 25px 25px 26px;
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.skills-results > div:hover {
+    border-color: var(--border-hover);
+
+    box-shadow: var(--shadow-md);
+
+    transform: translateY(-1px);
+}
+
+
+.skills-results > div:first-child::before,
+.skills-results > div:last-child::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+}
+
+
+.skills-results > div:first-child::before {
+    background: var(--success);
+}
+
+
+.skills-results > div:last-child::before {
+    background: var(--danger);
+}
+
+
+.skills-results h3 {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 17px;
+
+    color: var(--text);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    letter-spacing: -0.015em;
+}
+
+
+.skills-results > div:first-child h3::before {
+    content: "✓";
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 21px;
+    height: 21px;
+
+    flex: 0 0 21px;
+
+    border-radius: 7px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+.skills-results > div:last-child h3::before {
+    content: "!";
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 21px;
+    height: 21px;
+
+    flex: 0 0 21px;
+
+    border-radius: 7px;
+
+    background: var(--danger-soft);
+
+    color: var(--danger);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
 
 .skills-results ul {
-    padding-left: 20px;
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+    padding: 0;
+
+    list-style: none;
 }
+
 
 .skills-results li {
-    margin-bottom: 4px;
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 32px;
+
+    margin: 0;
+
+    padding: 7px 12px 7px 28px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 999px;
+
+    background: var(--surface-soft);
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 650;
+
+    line-height: 1.2;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
 }
 
 
-/* ---------- Section Heading ---------- */
+.skills-results li:hover {
+    transform: translateY(-1px);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.skills-results li::before {
+    position: absolute;
+
+    left: 9px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 14px;
+    height: 14px;
+
+    border-radius: 50%;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.skills-results > div:first-child li {
+    background: var(--success-soft);
+
+    border-color: var(--success-border);
+
+    color: var(--success);
+}
+
+
+.skills-results > div:first-child li::before {
+    content: "✓";
+
+    background: var(--success);
+
+    color: #ffffff;
+}
+
+
+.skills-results > div:first-child li:hover {
+    border-color: #b9e3d2;
+
+    box-shadow:
+        0 5px 14px rgba(21, 132, 95, 0.08);
+}
+
+
+.skills-results > div:last-child li {
+    background: var(--danger-soft);
+
+    border-color: var(--danger-border);
+
+    color: var(--danger);
+}
+
+
+.skills-results > div:last-child li::before {
+    content: "!";
+
+    background: var(--danger);
+
+    color: #ffffff;
+}
+
+
+.skills-results > div:last-child li:hover {
+    border-color: #e9bcbc;
+
+    box-shadow:
+        0 5px 14px rgba(195, 66, 66, 0.08);
+}
+
+
+/* =========================================================
+   Section Heading
+   ========================================================= */
 
 .section-heading {
     margin-bottom: 22px;
 }
 
+
 .section-heading h3 {
     margin-bottom: 4px;
+
+    color: var(--text);
+
+    font-size: 17px;
+    font-weight: 720;
+
+    letter-spacing: -0.02em;
 }
+
 
 .section-heading p {
-    color: #6b7280;
-    font-size: 14px;
+    max-width: 680px;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
 }
 
 
-/* ---------- Skill Evidence ---------- */
+/* =========================================================
+   Skill Evidence
+   ========================================================= */
 
 .skill-evidence {
-    margin-bottom: 25px;
+    position: relative;
+
+    margin-bottom: 18px;
+
+    padding: 25px;
+
+    overflow: hidden;
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.27s;
 }
+
+
+.skill-evidence::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            #6366f1
+        );
+}
+
+
+.skill-evidence .section-heading {
+    margin-bottom: 21px;
+}
+
+
+.skill-evidence .section-heading h3 {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.skill-evidence .section-heading h3::before {
+    content: "✦";
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    flex: 0 0 22px;
+
+    border-radius: 7px;
+
+    background: var(--accent-soft);
+
+    color: var(--accent);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
 
 #skill-evidence-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
 }
+
 
 .evidence-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 16px 18px;
-    background: #f9fafb;
+    position: relative;
+
+    min-width: 0;
+
+    padding: 18px 19px 19px 21px;
+
+    overflow: hidden;
+
+    background: var(--surface-soft);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.evidence-card h4 {
-    color: #111827;
-    font-size: 16px;
-    margin-bottom: 9px;
+
+.evidence-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 3px;
+    height: 100%;
+
+    background: var(--accent-border);
+
+    transition:
+        background 0.2s ease;
 }
+
+
+.evidence-card:hover {
+    background: #ffffff;
+
+    border-color: var(--accent-border);
+
+    box-shadow: var(--shadow-md);
+
+    transform: translateY(-1px);
+}
+
+
+.evidence-card:hover::before {
+    background: var(--accent);
+}
+
+
+.evidence-card h4 {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 22px;
+
+    margin-bottom: 12px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 720;
+
+    letter-spacing: -0.01em;
+
+    line-height: 1.35;
+}
+
+
+.evidence-card h4::before {
+    content: "";
+
+    display: inline-block;
+
+    width: 7px;
+    height: 7px;
+
+    flex: 0 0 7px;
+
+    margin-right: 8px;
+
+    border-radius: 50%;
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 0 3px var(--accent-soft);
+}
+
 
 .evidence-tags {
     display: flex;
+
     flex-wrap: wrap;
+
     gap: 7px;
 }
 
+
 .evidence-tag {
-    display: inline-block;
-    padding: 4px 9px;
-    border-radius: 20px;
-    background: #eef2ff;
-    color: #4338ca;
-    font-size: 12px;
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 30px;
+
+    padding: 6px 11px 6px 27px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
     font-weight: 600;
+
+    line-height: 1.4;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 
-/* ---------- Job Requirements ---------- */
+.evidence-tag::before {
+    content: "✓";
+
+    position: absolute;
+
+    left: 9px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    background: var(--accent-soft);
+
+    color: var(--accent);
+
+    font-size: 7px;
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+.evidence-tag:hover {
+    border-color: var(--accent-border);
+
+    background: var(--accent-soft);
+
+    color: var(--accent-dark);
+
+    box-shadow:
+        0 4px 10px rgba(79, 70, 229, 0.06);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   Job Requirements
+   ========================================================= */
 
 .job-requirements {
-    margin-bottom: 25px;
+    margin-bottom: 18px;
+
+    padding: 25px;
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.33s;
 }
+
+.job-requirements {
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.job-requirements::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            #6366f1
+        );
+}
+
 
 .requirements-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
 }
+
 
 .requirement-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    min-width: 0;
+
     padding: 18px;
-    background: #f9fafb;
+
+    background: var(--surface-soft);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.requirement-card h4 {
-    color: #111827;
-    font-size: 16px;
-    margin-bottom: 12px;
+
+.requirement-card:hover {
+    background: #ffffff;
+
+    border-color: var(--border-hover);
+
+    box-shadow: var(--shadow-sm);
 }
+
+
+.requirement-card h4 {
+    margin-bottom: 12px;
+
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: -0.005em;
+}
+
 
 .requirement-tags {
     display: flex;
+
     flex-wrap: wrap;
+
     gap: 7px;
 }
 
+
 .requirement-tag {
-    display: inline-block;
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 28px;
+
     padding: 5px 10px;
-    border-radius: 20px;
-    background: #eef2ff;
-    color: #4338ca;
-    font-size: 12px;
-    font-weight: 600;
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: 8px;
+
+    background: var(--accent-soft);
+
+    color: var(--accent-dark);
+
+    font-size: 11px;
+    font-weight: 650;
+
+    line-height: 1.25;
 }
+
 
 .empty-tag {
-    background: #f3f4f6;
-    color: #6b7280;
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 28px;
+
+    padding: 5px 10px;
+
+    border: 1px dashed var(--border);
+
+    border-radius: 8px;
+
+    background: var(--surface-muted);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 550;
+
+    line-height: 1.3;
 }
+
 
 .requirement-list {
-    padding-left: 20px;
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    padding: 0;
+
+    list-style: none;
 }
+
 
 .requirement-list li {
-    margin-bottom: 5px;
-    color: #4b5563;
+    position: relative;
+
+    padding-left: 17px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    line-height: 1.55;
 }
 
 
-/* ---------- Recommendations ---------- */
+.requirement-list li::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0.65em;
+    left: 1px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #aeb3bf;
+}
+
+
+/* =========================================================
+   Recommendations
+   ========================================================= */
+
+.recommendations {
+    position: relative;
+
+    padding: 25px;
+
+    overflow: hidden;
+
+    animation:
+        hiresense-result-section-in
+        0.36s
+        ease
+        both;
+
+    animation-delay: 0.39s;
+}
+
+
+.recommendations::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            #6366f1
+        );
+}
+
+
+.recommendations h3 {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 19px;
+
+    color: var(--text);
+
+    font-size: 17px;
+    font-weight: 720;
+
+    letter-spacing: -0.02em;
+}
+
+
+.recommendations h3::before {
+    content: "✦";
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    flex: 0 0 22px;
+
+    border-radius: 7px;
+
+    background: var(--accent-soft);
+
+    color: var(--accent);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
 
 .recommendations ol {
-    padding-left: 22px;
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding: 0;
+
+    list-style: none;
+
+    counter-reset: recommendation;
 }
+
 
 .recommendations li {
-    margin-bottom: 10px;
-    color: #4b5563;
+    position: relative;
+
+    min-height: 55px;
+
+    margin: 0;
+
+    padding: 14px 18px 14px 58px;
+
+    background: var(--surface-soft);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    counter-increment: recommendation;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 
-/* ---------- Responsive ---------- */
+.recommendations li::before {
+    content: counter(recommendation);
 
-@media (max-width: 768px) {
+    position: absolute;
 
-    .analyzer,
+    top: 50%;
+    left: 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: 8px;
+
+    background: var(--accent-soft);
+
+    color: var(--accent-dark);
+
+    font-size: 11px;
+    font-weight: 750;
+
+    line-height: 1;
+
+    transform: translateY(-50%);
+}
+
+
+.recommendations li::after {
+    content: "→";
+
+    position: absolute;
+
+    top: 50%;
+    right: 16px;
+
+    color: #b0b4c0;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    opacity: 0;
+
+    transform:
+        translate(4px, -50%);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.recommendations li:hover {
+    background: #ffffff;
+
+    border-color: var(--accent-border);
+
+    box-shadow: var(--shadow-sm);
+
+    transform: translateY(-1px);
+}
+
+
+.recommendations li:hover::after {
+    color: var(--accent);
+
+    opacity: 1;
+
+    transform:
+        translate(0, -50%);
+}
+
+
+/* =========================================================
+   Empty Result States
+   ========================================================= */
+
+/*
+   Keep single real skill results visually normal.
+   Skill lists are intentionally not given a generic
+   :only-child empty treatment because one real skill
+   is still a valid result.
+*/
+
+.skills-results li:only-child {
+    color: var(--text-secondary);
+}
+
+
+/*
+   Requirement lists can safely use their existing
+   single-item fallback because the backend/frontend
+   renders an explicit empty-state message there.
+*/
+
+.requirement-list li:only-child {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 34px;
+
+    padding: 8px 11px;
+
+    border: 1px dashed var(--border);
+
+    border-radius: 8px;
+
+    background: var(--surface-muted);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    line-height: 1.45;
+}
+
+
+.requirement-list li:only-child::before {
+    display: none;
+}
+
+
+.requirement-list li:only-child {
+    padding-left: 11px;
+}
+
+
+/* =========================================================
+   Results Entrance
+   ========================================================= */
+
+@keyframes hiresense-results-in {
+    from {
+        opacity: 0;
+
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+
+/*
+   Subtle staged reveal for the major result sections.
+   The delays are intentionally short so the dashboard
+   feels responsive rather than theatrical.
+*/
+
+@keyframes hiresense-result-section-in {
+    from {
+        opacity: 0;
+
+        transform: translateY(7px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   Responsive — Tablet
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .container {
+        width: min(
+            var(--container),
+            calc(100% - 32px)
+        );
+    }
+
+
+    .hero {
+        padding-top: 58px;
+    }
+
+
+    .analyzer {
+        grid-template-columns: 1fr;
+    }
+
+
+    #skill-evidence-list {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .file-input-label {
+        min-height: 210px;
+    }
+}
+
+
+/* =========================================================
+   Responsive — Mobile
+   ========================================================= */
+
+@media (max-width: 680px) {
+
+    header {
+        padding: 18px 0;
+    }
+
+
+    header .container {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 3px;
+    }
+
+
+    header h1 {
+        font-size: 21px;
+    }
+
+
+    header p {
+        font-size: 12px;
+    }
+
+
+    .hero {
+        padding:
+            46px 8px
+            34px;
+    }
+
+
+    .hero h2 {
+        font-size: 32px;
+
+        letter-spacing: -0.04em;
+    }
+
+
+    .hero p {
+        font-size: 14px;
+
+        line-height: 1.65;
+    }
+
+
+    .analyzer {
+        gap: 13px;
+    }
+
+
+    .resume-upload,
+    .job-input {
+        padding: 21px;
+    }
+
+
+    .file-input-label {
+        min-height: 190px;
+
+        padding: 24px 18px;
+    }
+
+
+    .file-input-icon {
+        width: 38px;
+        height: 38px;
+
+        margin-bottom: 11px;
+    }
+
+
+    textarea {
+        min-height: 200px;
+    }
+
+
+    #analyze-button {
+        width: 100%;
+
+        margin:
+            10px auto
+            42px;
+    }
+
+
+    .status-message,
+    .error-message {
+        width: 100%;
+
+        margin:
+            -18px
+            auto
+            28px;
+
+        padding:
+            12px
+            14px;
+
+        font-size: 12px;
+    }
+
+
+    .error-message {
+        padding-left: 46px;
+    }
+
+
+    .error-message::before {
+        left: 15px;
+
+        width: 20px;
+        height: 20px;
+
+        font-size: 10px;
+    }
+
+
+    .results > h2 {
+        font-size: 24px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .overall-score-card {
+        padding:
+            28px 20px
+            24px;
+    }
+
+
+    .overall-score-card p {
+        font-size: 52px;
+    }
+
+
+    .overall-score-card::after {
+        height: 6px;
+
+        margin-top: 20px;
+    }
+
+
     .scores,
-    .skills-results,
+    .skills-results {
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+    }
+
+
+    .score-card {
+        min-height: 132px;
+
+        padding: 21px;
+    }
+
+
+    .score-card::before {
+        top: 22px;
+        right: 21px;
+    }
+
+
+    .skills-results > div,
+    .skill-evidence,
+    .job-requirements,
+    .recommendations {
+        padding: 21px;
+    }
+
+
+    .skills-results > div:first-child::before,
+    .skills-results > div:last-child::before {
+        height: 3px;
+    }
+
+
     #skill-evidence-list,
     .requirements-grid {
         grid-template-columns: 1fr;
     }
 
-    .hero {
-        padding-top: 45px;
+
+    .evidence-card,
+    .requirement-card {
+        padding: 16px;
     }
+
+
+    .recommendations li {
+        padding:
+            14px 16px
+            14px 55px;
+    }
+
+
+    .recommendations li::before {
+        left: 15px;
+
+        width: 27px;
+        height: 27px;
+    }
+
+
+    .recommendations li::after {
+        display: none;
+    }
+
+
+    .requirement-list li:only-child {
+        min-height: 32px;
+
+        padding:
+            7px 10px;
+
+        font-size: 11px;
+    }
+}
+
+
+/* =========================================================
+   Responsive — Small Mobile
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .container {
+        width: min(
+            var(--container),
+            calc(100% - 24px)
+        );
+    }
+
 
     .hero h2 {
-        font-size: 30px;
+        font-size: 29px;
     }
+
+
+    .hero p {
+        font-size: 13px;
+    }
+
+
+    .input-header {
+        gap: 10px;
+    }
+
+
+    .input-badge {
+        min-height: 23px;
+
+        padding:
+            4px 8px;
+
+        font-size: 9px;
+    }
+
+
+    .file-input-label {
+        min-height: 175px;
+    }
+
+
+    .file-input-title {
+        font-size: 13px;
+    }
+
 
     .overall-score-card p {
-        font-size: 44px;
+        font-size: 47px;
     }
 
-    #analyze-button {
-        width: 100%;
+
+    .overall-score-card p::after {
+        font-size: 10px;
+
+        min-height: 25px;
+
+        padding: 5px 9px;
     }
 
-    .status-message,
-    .error-message {
-        width: 100%;
+
+    .score-card p {
+        font-size: 34px;
+    }
+
+
+    .skills-results li {
+        min-height: 30px;
+
+        padding:
+            6px 10px
+            6px 26px;
+
+        font-size: 11px;
+    }
+
+
+    .skills-results h3 {
+        margin-bottom: 14px;
+    }
+
+
+    .recommendations li {
+        min-height: 52px;
+
+        padding:
+            13px 13px
+            13px 48px;
+
+        font-size: 12px;
+    }
+
+
+    .recommendations li::before {
+        left: 13px;
+
+        width: 25px;
+        height: 25px;
+
+        border-radius: 7px;
+    }
+}
+
+
+/* =========================================================
+   Accessibility / Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+
+        scroll-behavior: auto !important;
+    }
+
+
+    #analyze-button:hover,
+    .score-card:hover,
+    .skills-results li:hover,
+    .skills-results > div:hover,
+    .evidence-card:hover,
+    .evidence-tag:hover,
+    .recommendations li:hover,
+    .file-input-label:hover {
+        transform: none;
+    }
+}
+
+
+/* =========================================================
+   Loading Spinner — Reduced Motion Override
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    #analyze-button:disabled::before {
+        animation: none;
     }
 }

@@ -5,17 +5,21 @@ const analyzeButton = document.getElementById(
     "analyze-button"
 );
 
+
 const resumeInput = document.getElementById(
     "resume"
 );
+
 
 const jobDescriptionInput = document.getElementById(
     "job-description"
 );
 
+
 const statusMessage = document.getElementById(
     "status-message"
 );
+
 
 const errorMessage = document.getElementById(
     "error-message"
@@ -26,49 +30,166 @@ const resultsSection = document.getElementById(
     "results"
 );
 
+
 const overallMatchScoreElement = document.getElementById(
     "overall-match-score"
 );
+
 
 const skillCoverageElement = document.getElementById(
     "skill-coverage"
 );
 
+
 const semanticSimilarityElement = document.getElementById(
     "semantic-similarity"
 );
+
 
 const matchedSkillsList = document.getElementById(
     "matched-skills"
 );
 
+
 const missingSkillsList = document.getElementById(
     "missing-skills"
 );
+
 
 const skillEvidenceList = document.getElementById(
     "skill-evidence-list"
 );
 
+
 const requiredSkillsElement = document.getElementById(
     "required-skills"
 );
+
 
 const preferredSkillsElement = document.getElementById(
     "preferred-skills"
 );
 
+
 const experienceRequirementsList = document.getElementById(
     "experience-requirements"
 );
+
 
 const educationRequirementsList = document.getElementById(
     "education-requirements"
 );
 
+
 const recommendationsList = document.getElementById(
     "recommendations-list"
 );
+
+
+/*
+    Resume upload UI elements.
+*/
+
+const resumeUploadLabel = document.querySelector(
+    ".file-input-label"
+);
+
+
+const resumeUploadIcon = document.querySelector(
+    ".file-input-icon"
+);
+
+
+const resumeUploadText = resumeUploadLabel?.querySelector(
+    "span:not(.file-input-icon)"
+);
+
+
+const resumeUploadHelper = resumeUploadLabel?.querySelector(
+    "small"
+);
+
+
+/*
+    Show the selected PDF in the upload area
+    so the user gets immediate visual confirmation.
+*/
+
+resumeInput.addEventListener(
+    "change",
+    () => {
+
+        const resumeFile =
+            resumeInput.files[0];
+
+
+        if (!resumeFile) {
+
+            resetResumeUploadState();
+
+            return;
+        }
+
+
+        resumeUploadLabel?.classList.add(
+            "has-file"
+        );
+
+
+        if (resumeUploadIcon) {
+
+            resumeUploadIcon.textContent =
+                "✓";
+        }
+
+
+        if (resumeUploadText) {
+
+            resumeUploadText.textContent =
+                resumeFile.name;
+        }
+
+
+        if (resumeUploadHelper) {
+
+            resumeUploadHelper.textContent =
+                "PDF ready to analyze";
+        }
+    }
+);
+
+
+/*
+    Restore the default resume upload state.
+*/
+
+function resetResumeUploadState() {
+
+    resumeUploadLabel?.classList.remove(
+        "has-file"
+    );
+
+
+    if (resumeUploadIcon) {
+
+        resumeUploadIcon.textContent =
+            "↑";
+    }
+
+
+    if (resumeUploadText) {
+
+        resumeUploadText.textContent =
+            "Choose your resume";
+    }
+
+
+    if (resumeUploadHelper) {
+
+        resumeUploadHelper.textContent =
+            "PDF files only";
+    }
+}
 
 
 analyzeButton.addEventListener("click", async () => {
@@ -174,7 +295,23 @@ analyzeButton.addEventListener("click", async () => {
 
         displayResults(data);
 
-        hideStatus();
+
+        /*
+            Show a brief confirmation after
+            the analysis has completed successfully.
+        */
+
+        showStatus(
+            "Analysis complete. Your resume has been evaluated against this job description."
+        );
+
+
+        setTimeout(
+            () => {
+                hideStatus();
+            },
+            3000
+        );
 
 
     } catch (error) {
@@ -209,6 +346,32 @@ function displayResults(data) {
         formatPercentage(
             data.overall_match_score
         );
+
+
+    /*
+        Pass the actual API score to the score-card
+        so the visual progress bar always matches
+        the calculated result.
+    */
+
+    const overallScore =
+        Number(data.overall_match_score);
+
+    if (!Number.isNaN(overallScore)) {
+
+        const clampedScore =
+            Math.min(
+                Math.max(overallScore, 0),
+                100
+            );
+
+        document
+            .querySelector(".overall-score-card")
+            ?.style.setProperty(
+                "--match-score",
+                `${clampedScore}%`
+            );
+    }
 
 
     skillCoverageElement.textContent =
@@ -415,11 +578,14 @@ function renderSkillEvidence(skillEvidence) {
                             "span"
                         );
 
+
                     tag.className =
                         "evidence-tag";
 
+
                     tag.textContent =
                         section;
+
 
                     tagsContainer.appendChild(
                         tag
@@ -433,11 +599,14 @@ function renderSkillEvidence(skillEvidence) {
                         "span"
                     );
 
+
                 tag.className =
                     "evidence-tag";
 
+
                 tag.textContent =
                     "No section evidence";
+
 
                 tagsContainer.appendChild(
                     tag
@@ -803,4 +972,3 @@ function setLoadingState(isLoading) {
             "Analyze Resume";
     }
 }
-
